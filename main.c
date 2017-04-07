@@ -12,11 +12,11 @@
 
 #include "ftls.h"
 
-typedef struct	s_lstinfo
-{
-	struct dirent *dir;
-	struct stat *meta;
-}				t_lstinfo;
+// typedef struct	s_lstinfo
+// {
+// 	struct dirent *dir;
+// 	struct stat *meta;
+// }				t_lstinfo;
 
 // t_list	*ft_lstadd_bottom(t_list *random_node, t_list *new)
 // {
@@ -49,11 +49,11 @@ t_list	*ft_lsthead(t_list	*head)
 	return (head);
 }
 
-void	get_dir_lst(t_lstinfo *info, t_list *dir_head)
+void	get_dir_lst(struct dirent *dir, t_list *dir_head)
 {
 	// struct stat *meta;
 
-	ft_lstadd(&dir_head, ft_lstnew(info, sizeof(info)));
+	ft_lstadd(&dir_head, ft_lstnew(dir, sizeof(dir)));
 }
 
 // void	print_one_level(t_list *dir_info)
@@ -71,18 +71,18 @@ void	get_dir_lst(t_lstinfo *info, t_list *dir_head)
 // 	}
 // }
 
-void	print_dir_name(t_lstinfo *info)
-{
+// void	print_dir_name(t_lstinfo *info)
+// {
 	
-}
+// }
 
 int main(int ac, char **av)
 {
 	DIR *dirp;
-	t_lstinfo *info;
+	// t_lstinfo *info;
 	t_list *dir_head;
-	
-	info = (t_lstinfo*)malloc(sizeof(t_lstinfo) * 1);//malloc for info#1
+	struct dirent *dir;
+	// info = (t_lstinfo*)malloc(sizeof(t_lstinfo) * 1);//malloc for info#1
 
 	dirp = opendir(".");
 	if (dirp == NULL)
@@ -91,13 +91,13 @@ int main(int ac, char **av)
 		return (0);
 	}
 	dir_head = ft_lsthead(dir_head);
-	while ((info->dir = readdir(dirp)))
+	while ((dir = readdir(dirp)))
 	{
-		get_dir_lst(info, dir_head);
+		get_dir_lst(dir, dir_head);
 		// ft_printf("%s\n", dir->d_name);
 	}
 	// sort();
-	ft_lstiter(dir_head, print_dir_name(dir_head->content));
+	ft_lstiter(dir_head, ft_putstr(dir->d_name));
 	// print_result(ac, av, info);
     if (!closedir(dirp))
     	return (-1);
