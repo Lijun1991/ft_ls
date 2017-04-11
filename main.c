@@ -40,49 +40,60 @@
 // 	return (random_node);
 // }
 
-t_list	*ft_lsthead(t_list	*head)
-{
-	head = (t_list*)malloc(sizeof(t_list) * 1);
-	head->content = NULL;
-	head->content_size = 0;
-	head->next = NULL;
-	return (head);
-}
+// t_list	*ft_lsthead(t_list	*head)
+// {
+// 	head = (t_list*)malloc(sizeof(t_list) * 1);
+// 	head->content = NULL;
+// 	head->content_size = 0;
+// 	head->next = NULL;
+// 	return (head);
+// }
 
-void	get_dir_lst(struct dirent *dir, t_list *dir_head)
+void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst)
 {
 	// struct stat *meta;
+	struct stat sb;
 
-	ft_lstadd(&dir_head, ft_lstnew(dir, sizeof(dir)));
+	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
+	if (stat(dir->d_name, &sb) == -1)
+	{
+		perror("stat");
+		exit(EXIT_FAILURE);
+	}
+	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
 }
 
-// void	print_one_level(t_list *dir_info)
-// {
-// 	t_list *select;
+void	print(t_list *elem)
+{
+	struct stat sb;
+	struct dirent *dir;
+	dir = elem->content;
 
-// 	select = ft_lstmap(dir_info, )
-// }
+	if (stat(dir->d_name, &sb) == -1)
+	{
+		perror("stat");
+		exit(EXIT_FAILURE);
+	}
+	if (dir->d_name[0] != '.')
+	{
+		ft_printf("%s\n", dir->d_name);
+		// ft_printf("%d\n", dir->d_type);
+	}
+}
 
-// void	print_result(int ac, char **av, t_list *dir_info)
-// {
-// 	if (ac == 1)
-// 	{
-// 		print_one_level(dir_info);//only print current direcotry (no dot file)
-// 	}
-// }
-
-// void	print_dir_name(t_lstinfo *info)
-// {
-	
-// }
+void	print_cap_r(t_list	*dir_lst)
+{
+	ft_putchar('\n');
+	ft_lstiter(dir_lst, print);
+}
 
 int main(int ac, char **av)
 {
 	DIR *dirp;
-	// t_lstinfo *info;
-	t_list *dir_head;
 	struct dirent *dir;
-	// info = (t_lstinfo*)malloc(sizeof(t_lstinfo) * 1);//malloc for info#1
+	t_list *all_lst;
+	t_list	*dir_lst;
 
 	dirp = opendir(".");
 	if (dirp == NULL)
@@ -90,15 +101,17 @@ int main(int ac, char **av)
 		ft_putstr("error");
 		return (0);
 	}
-	dir_head = ft_lsthead(dir_head);
+	all_lst = NULL;
+	dir_lst = NULL;
 	while ((dir = readdir(dirp)))
 	{
-		get_dir_lst(dir, dir_head);
-		// ft_printf("%s\n", dir->d_name);
+		get_lst(dir, &all_lst, &dir_lst);
 	}
 	// sort();
-	ft_lstiter(dir_head, ft_putstr(dir->d_name));
-	// print_result(ac, av, info);
+	ft_lstiter(all_lst, print);
+	// ft_putchar('\n');
+	print_cap_r(dir_lst);
+	exit(EXIT_SUCCESS);
     if (!closedir(dirp))
     	return (-1);
 	return (0);

@@ -16,7 +16,9 @@
 # include <dirent.h>
 # include <stdio.h>
 # include "./libft/libft.h"
-
+# include <sys/types.h>
+# include <sys/dir.h>
+# include <sys/stat.h>
 
 
 
