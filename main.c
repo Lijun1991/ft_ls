@@ -51,17 +51,18 @@
 
 void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst)
 {
-	// struct stat *meta;
 	struct stat sb;
 
-	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
+	// printf("%s\n", dir->d_name);
 	if (stat(dir->d_name, &sb) == -1)
 	{
-		perror("stat");
+		perror("stat1");
 		exit(EXIT_FAILURE);
 	}
+	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
 	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
+	// printf("%c\n", dir->d_name[0]);
 }
 
 void	print(t_list *elem)
@@ -70,9 +71,9 @@ void	print(t_list *elem)
 	struct dirent *dir;
 	dir = elem->content;
 
-	if (stat(dir->d_name, &sb) == -1)
+	if (stat(dir->d_name, &sb) == -1)//ft_strjoin("pictures/", dir->d_name)
 	{
-		perror("stat");
+		perror("stat2");
 		exit(EXIT_FAILURE);
 	}
 	if (dir->d_name[0] != '.')
@@ -82,38 +83,77 @@ void	print(t_list *elem)
 	}
 }
 
-void	print_cap_r(t_list	*dir_lst)
+int	print_cap_r(t_list	*path)
 {
 	ft_putchar('\n');
-	ft_lstiter(dir_lst, print);
-}
+	t_list *current;
 
-int main(int ac, char **av)
-{
 	DIR *dirp;
 	struct dirent *dir;
 	t_list *all_lst;
 	t_list	*dir_lst;
+	//  struct passwd *s;
 
-	dirp = opendir(".");
-	if (dirp == NULL)
+	// s = getpwuid(getuid());
+	current = path;
+	while (current)
 	{
-		ft_putstr("error");
-		return (0);
+		dirp = opendir(".");
+		if (dirp == NULL)
+		{
+			ft_putstr("error");
+			return (0);
+		}
+		all_lst1 = NULL;
+		dir_lst1 = NULL;
+		while ((dir = readdir(dirp)))
+		{
+			get_lst(dir, &all_lst, &dir_lst);
+		}
+		ft_lstiter(all_lst, print);
 	}
-	all_lst = NULL;
-	dir_lst = NULL;
-	while ((dir = readdir(dirp)))
-	{
-		get_lst(dir, &all_lst, &dir_lst);
-	}
-	// sort();
-	ft_lstiter(all_lst, print);
-	// ft_putchar('\n');
-	print_cap_r(dir_lst);
 	exit(EXIT_SUCCESS);
     if (!closedir(dirp))
     	return (-1);
+    return (0);
+}
+
+int main(int ac, char **av)
+{
+	// DIR *dirp;
+	// struct dirent *dir;
+	// t_list *all_lst;
+	// t_list	*dir_lst;
+	t_list	*path;
+
+	path = NULL;
+	ft_lstadd(path, ft_lstnew(".", 2));
+
+	print_cap_r(path);
+	// dirp = opendir("."); ///pictures
+	// if (dirp == NULL)
+	// {
+	// 	perror("opendir");
+	// 	return (0);
+	// }
+	// all_lst = NULL;
+	// dir_lst = NULL;
+	// while ((dir = readdir(dirp)))
+	// {
+	// 	get_lst(dir, &all_lst, &dir_lst);
+	// }
+
+
+	// ft_lstiter(all_lst, print);
+
+	// ft_putchar('\n');
+
+	// ft_lstiter(dir_lst, print);
+	// print_cap_r(dir_lst);
+
+	// exit(EXIT_SUCCESS);
+ //    if (!closedir(dirp))
+ //    	return (-1);
 	return (0);
 }
 
