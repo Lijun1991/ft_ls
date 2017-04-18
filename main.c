@@ -6,7 +6,7 @@
 /*   By: lwang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:08:44 by lwang             #+#    #+#             */
-/*   Updated: 2017/04/17 23:50:48 by lwang            ###   ########.fr       */
+/*   Updated: 2017/04/18 00:03:43 by lwang            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ char	**parse_flag(char **av, int *flag)
 	return (av);
 }
 
+//comment;
 int	get_arg(t_linfo *info, char *av)
 {
 	DIR *dirp;
