@@ -56,7 +56,6 @@ char	**parse_flag(char **av, int *flag)
 	return (av);
 }
 
-//comment;
 int	get_arg(t_linfo *info, char *av)
 {
 	DIR *dirp;
@@ -75,20 +74,15 @@ int	get_arg(t_linfo *info, char *av)
 	return (0);
 }
 
-t_linfo	*parse_argument(int ac, char **av, t_linfo *info)
+t_linfo	*parse_argument(char **av, t_linfo *info)
 {
-	if (ac == 1)
-	{
+	av = parse_flag(av, &info->flag);
+	if (*av == NULL)
 		ft_lstadd(&info->directory, ft_lstnew(".", 2));
-	}
-	else if (ac >= 2)
+	while (*av != NULL)
 	{
-		av = parse_flag(av, &info->flag);
-		while (*av != NULL)
-		{
-			info->count++;
-			get_arg(info, *av++);
-		}
+		info->count++;
+		get_arg(info, *av++);
 	}
 	return (info);
 }
@@ -144,11 +138,12 @@ void	print_directory(t_linfo *info)
 
 int main(int ac, char **av)
 {
+	(void)ac;
 	t_linfo *info;
 	info = (t_linfo*)malloc(sizeof(t_linfo) * 1);
 	ft_bzero(info, sizeof(t_linfo));
 
-	info = parse_argument(ac, av, info);
+	info = parse_argument(av, info);
 	print_unvalid(info->invalid);
 	print_file(info->file, info);//, int flag for r
 	print_directory(info);
