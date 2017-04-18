@@ -35,7 +35,7 @@ static void	norm1_print_exit_precision(t_info *conver_info, \
 	}
 	else
 		print_nbr_helper(conver_info, i, ' ');
-	conver_info->count += pputstr(conver_info->pre_sign);
+	conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 	print_str(str, conver_info);
 }
 
@@ -51,7 +51,7 @@ static void	norm3_print_exit_precision(t_info *conver_info, \
 			conver_info->flag_info->hash == '#')
 			j--;
 	}
-	conver_info->count += pputstr(conver_info->pre_sign);
+	conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 	print_nbr_helper(conver_info, j, '0');
 	print_str(str, conver_info);
 }
@@ -72,7 +72,7 @@ static void	norm2_print_exit_precision(t_info *conver_info, \
 		i = conver_info->field_width - \
 		conver_info->precision - conver_info->sign;
 		print_nbr_helper(conver_info, i, ' ');
-		conver_info->count += pputstr(conver_info->pre_sign);
+		conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 		j = conver_info->precision - len;
 		print_nbr_helper(conver_info, j, '0');
 		print_str(str, conver_info);
@@ -93,7 +93,7 @@ void		print_exit_precision(t_info *conver_info, char *str, int len)
 			if (conver_info->precision + \
 				conver_info->sign >= conver_info->field_width)
 			{
-				conver_info->count += pputstr(conver_info->pre_sign);
+				conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 				print_str(str, conver_info);
 			}
 			else
@@ -113,15 +113,16 @@ void		print_no_precision_left(t_info *conver_info, char *str, int len)
 	{
 		if (len + conver_info->sign >= conver_info->field_width)
 		{
-			conver_info->count += pputstr(conver_info->pre_sign);
+			conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 			print_str(str, conver_info);
 		}
 		else
 		{
 			i = conver_info->field_width - len - conver_info->sign;
-			conver_info->count += pputstr(conver_info->pre_sign);
+			conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 			print_str(str, conver_info);
 			print_nbr_helper(conver_info, i, ' ');
 		}
 	}
 }
+

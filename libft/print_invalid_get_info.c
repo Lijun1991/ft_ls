@@ -42,13 +42,13 @@ void	print_unvalid_conversion_specifier(t_info *conver_info, char s)
 	if (conver_info->flag_info->minus == '-')
 	{
 		i = conver_info->field_width - 1;
-		conver_info->count += pputchar(s);
+		conver_info->count += pputchar(s, conver_info->fd);
 		print_nbr_helper(conver_info, i, ' ');
 	}
 	else
 	{
 		i = conver_info->field_width - 1;
 		print_space_helper(conver_info, i);
-		conver_info->count += pputchar(s);
+		conver_info->count += pputchar(s, conver_info->fd);
 	}
 }

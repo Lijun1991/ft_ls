@@ -23,8 +23,8 @@
 # include <wchar.h>
 
 # define RED "\e[31;3m"
-# define BLUE "\e[32;3m"
-# define GREE "e[36;3m"
+# define BLUE "\e[34;3m"
+# define GREE "\e[32;3m"
 # define YELLOW "\e[33;3m"
 # define PURPLE "\e[35;3m"
 
@@ -71,6 +71,7 @@ typedef struct		s_info
 	int		isp;
 	int		sign;
 	char	star;
+	int		fd;
 }					t_info;
 
 void				*ft_memset(void *b, int c, size_t len);
@@ -142,14 +143,15 @@ unsigned char		swap_bits(unsigned char octet);
 int					word_count(char *str, char c);
 int					skip_space(char const *str);
 
-int					pputchar(char c);
-int					pputstr(char const *s);
+int					pputchar(char c, int fd);
+int					pputstr(char const *s, int fd);
 int					ft_abs(int n);
 
 /*
 ** printf.c
 */
 int					ft_printf(char *format, ...);
+int					ft_fprintf(int fd, char *format, ...);
 char				*print_convert_result(char *str, va_list args, \
 	t_info *conver_info);
 char				*get_flag_info(t_info *conver_info, char *str);

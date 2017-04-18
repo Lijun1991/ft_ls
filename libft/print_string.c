@@ -16,7 +16,7 @@ void	ft_putstr_len(char *s, int i, t_info *conver_info)
 {
 	while (i > 0 && i < (int)ft_strlen(s))
 	{
-		conver_info->count += pputchar(*s);
+		conver_info->count += pputchar(*s, conver_info->fd);
 		i--;
 		s++;
 	}
@@ -27,7 +27,7 @@ void	print_reg_str_precision(t_info *conver_info, char *s, int i, int j)
 	i = conver_info->field_width - ft_strlen(s);
 	j = conver_info->field_width - conver_info->precision;
 	if (conver_info->star == '*' && conver_info->precision == 0)
-		conver_info->count += pputstr(s);
+		conver_info->count += pputstr(s, conver_info->fd);
 	if (conver_info->precision >= (int)ft_strlen(s))
 	{
 		if (conver_info->flag_info->minus == '-')
@@ -35,7 +35,7 @@ void	print_reg_str_precision(t_info *conver_info, char *s, int i, int j)
 		else
 		{
 			print_space_helper(conver_info, i);
-			conver_info->count += pputstr(s);
+			conver_info->count += pputstr(s, conver_info->fd);
 		}
 	}
 	else if (conver_info->flag_info->minus == '-')
@@ -71,7 +71,7 @@ void	print_reg_string(t_info *conver_info, char *s, int i, int j)
 			else
 			{
 				print_space_helper(conver_info, i);
-				conver_info->count += pputstr(s);
+				conver_info->count += pputstr(s, conver_info->fd);
 			}
 		}
 	}
@@ -86,7 +86,7 @@ void	print_null(t_info *conver_info)
 		if (conver_info->is_nopre == 1 && conver_info->is_dot == 1 && \
 			conver_info->is_dot_zero == 0 && conver_info->is_dot_pre == 0)
 		{
-			conver_info->count += pputstr("(null)");
+			conver_info->count += pputstr("(null)", conver_info->fd);
 			return ;
 		}
 		print_space_helper(conver_info, conver_info->field_width);
@@ -96,13 +96,13 @@ void	print_null(t_info *conver_info)
 		if (conver_info->is_nopre == 1 && conver_info->is_dot == 1 && \
 			conver_info->is_dot_zero == 0 && conver_info->is_dot_pre == 0)
 		{
-			conver_info->count += pputstr("(null)");
+			conver_info->count += pputstr("(null)", conver_info->fd);
 			return ;
 		}
 		if (conver_info->is_nopre == 0 && conver_info->is_dot == 1 && \
 			conver_info->is_dot_zero == 0 && conver_info->is_dot_pre == 0)
 		{
-			conver_info->count += pputstr("(null)");
+			conver_info->count += pputstr("(null)", conver_info->fd);
 			return ;
 		}
 	}
@@ -122,7 +122,7 @@ void	print_string(t_info *conver_info, va_list args, int sign)
 		ws = va_arg(args, wchar_t*);
 		if (!ws)
 		{
-			conver_info->count += pputstr("(null)");
+			conver_info->count += pputstr("(null)", conver_info->fd);
 			return ;
 		}
 		print_wide_string(conver_info, ws, sign);

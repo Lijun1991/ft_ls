@@ -75,18 +75,18 @@ void	print_regular_char(t_info *conver_info, char chara, int sign)
 		if (conver_info->flag_info->minus == '-')
 		{
 			i = conver_info->field_width - 1;
-			conver_info->count += pputchar(chara);
+			conver_info->count += pputchar(chara, conver_info->fd);
 			print_nbr_helper(conver_info, i, ' ');
 		}
 		else
 		{
 			i = conver_info->field_width - 1;
 			print_space_helper(conver_info, i);
-			conver_info->count += pputchar(chara);
+			conver_info->count += pputchar(chara, conver_info->fd);
 		}
 	}
 	else
-		conver_info->count += pputchar(chara);
+		conver_info->count += pputchar(chara, conver_info->fd);
 }
 
 void	print_char(t_info *conver_info, va_list args, int sign)

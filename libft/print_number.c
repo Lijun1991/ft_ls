@@ -63,14 +63,14 @@ static void			norm_p_pre_left(t_info *conver_info, \
 	if (conver_info->precision + conver_info->sign >= conver_info->field_width)
 	{
 		j = conver_info->precision - len;
-		conver_info->count += pputstr(conver_info->pre_sign);
+		conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 		print_nbr_helper(conver_info, j, '0');
 		print_str(str, conver_info);
 	}
 	else
 	{
 		j = conver_info->precision - len;
-		conver_info->count += pputstr(conver_info->pre_sign);
+		conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 		print_nbr_helper(conver_info, j, '0');
 		print_str(str, conver_info);
 		i = conver_info->field_width - conver_info->precision\
@@ -92,13 +92,13 @@ void				print_exit_precision_left(t_info *conver_info,\
 			if (conver_info->precision + conver_info->sign\
 			>= conver_info->field_width)
 			{
-				conver_info->count += pputstr(conver_info->pre_sign);
+				conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 				print_str(str, conver_info);
 			}
 			else
 			{
 				i = conver_info->field_width - len - conver_info->sign;
-				conver_info->count += pputstr(conver_info->pre_sign);
+				conver_info->count += pputstr(conver_info->pre_sign, conver_info->fd);
 				print_str(str, conver_info);
 				print_nbr_helper(conver_info, i, ' ');
 			}
@@ -121,3 +121,4 @@ void				print_nbr(t_info *conver_info, char *str, int len)
 		print_exit_precision_left(conver_info, str, len);
 	}
 }
+

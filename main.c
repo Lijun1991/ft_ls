@@ -6,156 +6,151 @@
 /*   By: lwang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/06 16:08:44 by lwang             #+#    #+#             */
-/*   Updated: 2017/04/06 17:49:15 by lwang            ###   ########.fr       */
+/*   Updated: 2017/04/17 23:50:48 by lwang            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ftls.h"
 
-// typedef struct	s_lstinfo
-// {
-// 	struct dirent *dir;
-// 	struct stat *meta;
-// }				t_lstinfo;
-
-// t_list	*ft_lstadd_bottom(t_list *random_node, t_list *new)
-// {
-// 	if (random_node->next == NULL)
-// 	{
-// 		random_node->next = new;
-// 		printf("added at begainning\n");
-// 	}
-// 	else
-// 	{
-// 		t_list *current;
-
-// 		current = random_node;
-// 		while (current->next != NULL)
-// 		{
-// 			current = current->next;
-// 		}
-// 		current->next = new;
-// 		printf("added lator\n");
-// 	}
-// 	return (random_node);
-// }
-
-// t_list	*ft_lsthead(t_list	*head)
-// {
-// 	head = (t_list*)malloc(sizeof(t_list) * 1);
-// 	head->content = NULL;
-// 	head->content_size = 0;
-// 	head->next = NULL;
-// 	return (head);
-// }
-
-void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst)
+void  get_flag(char *av, int *flag)
 {
-	struct stat sb;
+   while (*++av)
+   {
+      if (*av == 'a')
+         *flag |= FLAG_A;
+      else if (*av == 'r')
+         *flag |= FLAG_R;
+      else if (*av == 'R')
+         *flag |= FLAG_CAP_R;
+      else if (*av == 't')
+         *flag |= FLAG_T;
+      else if (*av == 'l')
+         *flag |= FLAG_L;
+      else if (*av == '1')
+         *flag |= FLAG_ONE;
+      else if (*av == 'f')
+         *flag |= FLAG_F;
+      else if (*av == 'n')
+         *flag |= FLAG_N;
+      else if (*av == 'u')
+         *flag |= FLAG_U;
+      else
+      {
+         ft_printf("ft_ls: illegal option -- %c\n", *av);
+         ft_printf("usage: ft_ls [-arRtl1fnu] [file ...]\n");
+         exit(1);
+      }
+   }
 
-	// printf("%s\n", dir->d_name);
-	if (stat(dir->d_name, &sb) == -1)
-	{
-		perror("stat1");
-		exit(EXIT_FAILURE);
-	}
-	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
-	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
-	// printf("%c\n", dir->d_name[0]);
 }
 
-void	print(t_list *elem)
+char	**parse_flag(char **av, int *flag)
 {
-	struct stat sb;
-	struct dirent *dir;
-	dir = elem->content;
-
-	if (stat(dir->d_name, &sb) == -1)//ft_strjoin("pictures/", dir->d_name)
+	while (*++av)
 	{
-		perror("stat2");
-		exit(EXIT_FAILURE);
+		if (av[0][0] == '-')
+			get_flag(*av, flag);
+		else
+			break ;
 	}
-	if (dir->d_name[0] != '.')
-	{
-		ft_printf("%s\n", dir->d_name);
-		// ft_printf("%d\n", dir->d_type);
-	}
+	return (av);
 }
 
-int	print_cap_r(t_list	*path)
+int	get_arg(t_linfo *info, char *av)
 {
-	ft_putchar('\n');
-	t_list *current;
-
 	DIR *dirp;
-	struct dirent *dir;
-	t_list *all_lst;
-	t_list	*dir_lst;
-	//  struct passwd *s;
+	struct stat sb;
 
-	// s = getpwuid(getuid());
-	current = path;
-	while (current)
+	if (av)
 	{
-		dirp = opendir(".");
-		if (dirp == NULL)
-		{
-			ft_putstr("error");
-			return (0);
-		}
-		all_lst1 = NULL;
-		dir_lst1 = NULL;
-		while ((dir = readdir(dirp)))
-		{
-			get_lst(dir, &all_lst, &dir_lst);
-		}
-		ft_lstiter(all_lst, print);
+		dirp = opendir(av);
+		if (dirp != NULL)
+			ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		else if (stat(av, &sb) == -1)
+			ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		else
+			ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
 	}
-	exit(EXIT_SUCCESS);
-    if (!closedir(dirp))
-    	return (-1);
-    return (0);
+	return (0);
+}
+
+t_linfo	*parse_argument(int ac, char **av, t_linfo *info)
+{
+	if (ac == 1)
+	{
+		ft_lstadd(&info->directory, ft_lstnew(".", 2));
+	}
+	else if (ac >= 2)
+	{
+		av = parse_flag(av, &info->flag);
+		while (*av != NULL)
+		{
+			info->count++;
+			get_arg(info, *av++);
+		}
+	}
+	return (info);
+}
+
+void	print_unvalid(t_list *invalid)
+{
+	t_list *cur;
+
+	cur = invalid;
+	merge_sort(&cur, sorted_merge_file);
+	while (cur)
+	{
+		ft_fprintf(2, "ls: %s: No such file or directory\n", (char*)cur->content);
+		cur = cur->next;
+	}
+	// ft_lstfree(path);
+}
+
+void	print_file(t_list *file, t_linfo *info)//int flag
+{
+	t_list *cur;
+
+	cur = file;
+	if (info->flag & FLAG_R)
+		merge_sort(&cur, sorted_merge_file);
+	else
+		merge_sort(&cur, sorted_merge_file);
+	// if (flag & FLAG_T)
+	// 	merge_sort(&cur, sort_by_t)
+	// if (flag & FLAG_U)
+	// 	merge_sort(&cur, sort_by_u)
+	
+	while(cur != NULL)
+	{
+		ft_printf("%s\n", (char*)cur->content);
+		cur = cur->next;
+	}
+	// ft_lstfree(file);
+}
+
+void	print_directory(t_linfo *info)
+{
+	t_list *cur;
+
+	cur = info->directory;
+	while (cur)
+	{
+		list_directory(cur->content, (int)ft_strlen((char*)cur->content), info);
+		cur = cur->next;
+	}
+	// ft_lstfree(directory);
 }
 
 int main(int ac, char **av)
 {
-	// DIR *dirp;
-	// struct dirent *dir;
-	// t_list *all_lst;
-	// t_list	*dir_lst;
-	t_list	*path;
+	t_linfo *info;
+	info = (t_linfo*)malloc(sizeof(t_linfo) * 1);
+	ft_bzero(info, sizeof(t_linfo));
 
-	path = NULL;
-	ft_lstadd(path, ft_lstnew(".", 2));
-
-	print_cap_r(path);
-	// dirp = opendir("."); ///pictures
-	// if (dirp == NULL)
-	// {
-	// 	perror("opendir");
-	// 	return (0);
-	// }
-	// all_lst = NULL;
-	// dir_lst = NULL;
-	// while ((dir = readdir(dirp)))
-	// {
-	// 	get_lst(dir, &all_lst, &dir_lst);
-	// }
-
-
-	// ft_lstiter(all_lst, print);
-
-	// ft_putchar('\n');
-
-	// ft_lstiter(dir_lst, print);
-	// print_cap_r(dir_lst);
-
-	// exit(EXIT_SUCCESS);
- //    if (!closedir(dirp))
- //    	return (-1);
+	info = parse_argument(ac, av, info);
+	print_unvalid(info->invalid);
+	print_file(info->file, info);//, int flag for r
+	print_directory(info);
+	// free(info);
 	return (0);
 }
-
-
-

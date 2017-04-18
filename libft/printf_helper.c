@@ -15,12 +15,12 @@
 void	print_nbr_helper(t_info *conver_info, int i, char c)
 {
 	while (i-- > 0)
-		conver_info->count += pputchar(c);
+		conver_info->count += pputchar(c, conver_info->fd);
 }
 
 void	write_helper(t_info *conver_info, char *str, int j)
 {
-	write(1, str, j);
+	write(conver_info->fd, str, j);
 	conver_info->count += j;
 }
 
@@ -29,9 +29,9 @@ void	print_space_helper(t_info *conver_info, int i)
 	while (i-- > 0)
 	{
 		if (conver_info->flag_info->zero == 'y')
-			conver_info->count += pputchar('0');
+			conver_info->count += pputchar('0', conver_info->fd);
 		else
-			conver_info->count += pputchar(' ');
+			conver_info->count += pputchar(' ', conver_info->fd);
 	}
 }
 
@@ -46,6 +46,6 @@ void	print_w_char_helper(t_info *conver_info, wchar_t *ws, int sign)
 
 void	put_str_helper(t_info *conver_info, int i, char *s)
 {
-	conver_info->count += pputstr(s);
+	conver_info->count += pputstr(s, conver_info->fd);
 	print_nbr_helper(conver_info, i, ' ');
 }

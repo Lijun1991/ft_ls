@@ -148,3 +148,4 @@ void		print_number_conversion(t_info *conver_info, char c, va_list args)
 	else if (conver_info->conversion_specifier == 'b')
 		print_result_capx(nbr1, conver_info, 2);
 }
+

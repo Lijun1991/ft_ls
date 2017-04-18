@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-int	pputstr(char const *s)
+int	pputstr(char const *s, int fd)
 {
 	int i;
 
@@ -21,7 +21,7 @@ int	pputstr(char const *s)
 		return (0);
 	while (s[i])
 	{
-		ft_putchar(s[i]);
+		pputchar(s[i], fd);
 		i++;
 	}
 	return (i);
