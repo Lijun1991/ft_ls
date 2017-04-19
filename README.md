@@ -28,3 +28,6 @@ man 2 stat  lstat
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+to creat a new file with set time:
+touch -t 201601111111.11 bla
