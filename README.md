@@ -29,5 +29,5 @@ man 2 stat  lstat
 #include <sys/stat.h>
 #include <unistd.h>
 
-to creat a new file with set time:
+to creat a new file with set time:(year_month_date_hour_minutes_second)
 touch -t 201601111111.11 bla
