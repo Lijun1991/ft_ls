@@ -44,6 +44,13 @@ char	*add_path(char *dname, char *path)
 // 	}
 // }
 
+
+void	print_l(struct stat sb)
+{
+	ft_printf("hello%s\n", (sb.st_mode & S_ISUID));
+}
+
+
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 {
 	t_list *cur;
@@ -63,13 +70,13 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			return ;
 		}
 		if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		{
 			ft_printf(GREE"%s\n"CLN, dir->d_name);
-		}
 		else if (dir->d_name[0] != '.')
 			ft_printf("%s\n", dir->d_name);
 		else if (dir->d_name[0] == '.' && (info->flag & FLAG_A))
 			ft_printf("%s\n", dir->d_name);
+		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+			print_l(sb);
 		cur = cur->next;
 	}
 }
