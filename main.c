@@ -147,6 +147,6 @@ int main(int ac, char **av)
 	print_unvalid(info->invalid);
 	print_file(info->file, info);
 	print_directory(info);
-	// free(info);
+	free(info);
 	return (0);
 }

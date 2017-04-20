@@ -45,14 +45,17 @@ typedef struct	s_linfo
 	t_list *directory;
 	int flag;
 	int count;
+	long long block_size;
+	long max_link;
+	long long max_bytes_nbr;
 }				t_linfo;
 
-typedef struct s_pre
-{
-  long long block_size;
-  long max_link;
-  long long max_bytes_nbr;
-}             t_pre;
+// typedef struct s_pre
+// {
+//   long long block_size;
+//   long max_link;
+//   long long max_bytes_nbr;
+// }             t_pre;
 
 t_list *sorted_merge(t_list *a, t_list *b);
 t_list *sorted_merge_r_dir(t_list *a, t_list *b);
@@ -68,11 +71,12 @@ char	*get_path(char *path, char *name);
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info);
 char	*add_path(char *dname, char *path);
 
-void	print_l(struct stat sb, struct dirent *dir, char *path);
-t_pre *pre_display_l(t_pre *pre, char *path);
+void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info);
+t_linfo *pre_display_l(t_linfo *pre, char *path);
 void modi_time(char *s, struct stat sb);
 char  *cut_second(char *s);
 char	get_type(struct stat sb);
+int	max_len(long long nbr);
 
 #endif
 

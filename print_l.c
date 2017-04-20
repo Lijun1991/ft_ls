@@ -31,21 +31,18 @@ void modi_time(char *s, struct stat sb)
 	ft_printf(" %s", str[1]);
 	ft_printf(" %s", str[2]);
 	if ((long)cur_time - (long)sb.st_mtime > 15768000 || (long)cur_time - (long)sb.st_mtime < -15768000)
-		ft_printf(" %5s", str[4]);
+		ft_printf(" %5d", ft_atoi(str[4]));
 	else
 		ft_printf(" %s", cut_second(str[3]));
 	free(str);
 	return ;
 }
 
-t_pre *pre_display_l(t_pre *pre, char *path)
+t_linfo *pre_display_l(t_linfo *info, char *path)
 {
 	DIR *dirp;
 	struct stat sb;
 	struct dirent *dir;
-	t_pre *tmp;
-
-	tmp = pre;
 
 	dirp = opendir(path);
 	if (dirp == NULL)
@@ -60,12 +57,14 @@ t_pre *pre_display_l(t_pre *pre, char *path)
 			perror("stat2");
 			return (NULL);
 		}
-		tmp->max_link = sb.st_nlink > tmp->max_link ? sb.st_nlink : tmp->max_link;
-		tmp->max_bytes_nbr = sb.st_size > tmp->max_bytes_nbr ? sb.st_size : tmp->max_bytes_nbr;
-		tmp->block_size += (long long) sb.st_blocks;
+		info->max_link = sb.st_nlink > info->max_link ? sb.st_nlink : info->max_link;
+		info->max_bytes_nbr = sb.st_size > info->max_bytes_nbr ? sb.st_size : info->max_bytes_nbr;
+		info->block_size += (long long) sb.st_blocks;
 	}
-	ft_printf("%lld, %ld, %lld\n", tmp->block_size, tmp->max_link,  tmp->max_bytes_nbr);
-	return (tmp);
+	ft_printf("total %lld\n", info->block_size);
+	// if (!closedir(dirp))
+ //    	return (NULL);
+	return (info);
 }
 
 char	get_type(struct stat sb)
@@ -90,20 +89,28 @@ char	get_type(struct stat sb)
 	return (a);
 }
 
-void	print_l(struct stat sb, struct dirent *dir, char *path)
+int	max_len(long long nbr)
+{
+	int i;
+
+	i = 0;
+	while (nbr)
+	{
+		nbr /= 10;
+		i++;
+	}
+	return (i);
+}
+
+void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info)
 {
 	struct passwd *s;
 	struct group *t;
-	t_pre *pre;
 
 	s = getpwuid(getuid());
 	t = getgrgid(s->pw_gid);
-	pre = (t_pre*)malloc(sizeof(t_pre) * 1);
-	ft_bzero(pre, sizeof(t_pre));
-	pre = pre_display_l(pre, path);
 
 	ft_printf("%c", get_type(sb));
-	ft_printf("%c", sb.st_mode & S_IFMT ? 'r' : '-');
 	ft_printf("%c", sb.st_mode & S_IRUSR ? 'r' : '-');
 	ft_printf("%c", sb.st_mode & S_IWUSR ? 'w' : '-');
 	ft_printf("%c", sb.st_mode & S_IXUSR ? 'x' : '-');
@@ -114,14 +121,15 @@ void	print_l(struct stat sb, struct dirent *dir, char *path)
 	ft_printf("%c", sb.st_mode & S_IWOTH ? 'w' : '-');
 	ft_printf("%c", sb.st_mode & S_IXOTH ? 'x' : '-');
 
-	ft_printf("  %2ld", (long) sb.st_nlink);
+	ft_printf("  %*ld", max_len(info->max_link), (long)sb.st_nlink);
 	ft_printf(" %s", s->pw_name);
 	ft_printf("  %s", t->gr_name);
-	ft_printf("  %5lld", (long long) sb.st_size);
+	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
 	modi_time(ctime(&sb.st_ctime), sb);
-	ft_printf(" %s\n", dir->d_name);
-
-	// ft_printf(GREE"%s\n"CLN, dir->d_name);
+	if (sign == 1)
+		ft_printf(GREE" %s\n"CLN, dir->d_name);
+	else
+		ft_printf(" %s\n", dir->d_name);
 }
 
 

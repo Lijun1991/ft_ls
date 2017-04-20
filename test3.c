@@ -39,17 +39,39 @@
 // }
 
 
-double cm_to_inches(double cm) {
-	return cm / 2.54;
+// double cm_to_inches(double cm) {
+// 	return cm / 2.54;
+// }
+
+// // "strchr" is part of the C string handling (i.e., no need for declaration)
+// // See https://en.wikipedia.org/wiki/C_string_handling#Functions
+
+// int main(void) {
+// 	double (*func1)(double) = cm_to_inches;
+// 	char * (*func2)(const char *, int) = strchr;
+// 	printf("%f %s", func1(15.0), func2("Wikipedia", 'p'));
+// 	/* prints "5.905512 pedia" */
+// 	return 0;
+// }
+
+int	max_len(long long nbr)
+{
+	int i;
+
+	i = 0;
+	while (nbr)
+	{
+		nbr /= 10;
+		i++;
+	}
+	return (i);
 }
 
-// "strchr" is part of the C string handling (i.e., no need for declaration)
-// See https://en.wikipedia.org/wiki/C_string_handling#Functions
-
-int main(void) {
-	double (*func1)(double) = cm_to_inches;
-	char * (*func2)(const char *, int) = strchr;
-	printf("%f %s", func1(15.0), func2("Wikipedia", 'p'));
-	/* prints "5.905512 pedia" */
-	return 0;
+int main()
+{
+	ft_printf("%*d\n", max_len(2522555545), 5);
+	return (0);
 }
+
+
+

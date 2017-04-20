@@ -65,6 +65,7 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 
 	cur = lst;
 
+
 	while(cur != NULL)
 	{
 		dir = cur->content;
@@ -75,15 +76,15 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			return ;
 		}
 		if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_l(sb, dir, path);
+			print_l(sb, dir, 1, info);
 		else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 			ft_printf(GREE"%s\n"CLN, dir->d_name);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
-			print_l(sb, dir, path);
+			print_l(sb, dir, 0, info);
 		else if (dir->d_name[0] != '.')
 			ft_printf("%s\n", dir->d_name);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] == '.' && (info->flag & FLAG_A))
-			print_l(sb, dir, path);
+			print_l(sb, dir, 0, info);
 		else if (dir->d_name[0] == '.' && (info->flag & FLAG_A))
 			ft_printf("%s\n", dir->d_name);
 		cur = cur->next;
@@ -125,6 +126,7 @@ int	list_directory(char *path, int len, t_linfo *info)
 	char *newpath;
 	t_list *all_lst;
 	t_list	*dir_lst;
+
 	char *tmp;
 
 	tmp = path;
@@ -144,6 +146,10 @@ int	list_directory(char *path, int len, t_linfo *info)
 		perror("dir no exit");
 		return (2);
 	}
+
+	if ((info->flag & FLAG_L))
+		info = pre_display_l(info, path);///put this inside get_dir_lst,or somewhere.......
+
 	while ((dir = readdir(dirp)))
 		get_lst(dir, &all_lst, &dir_lst, path);
 
@@ -151,6 +157,7 @@ int	list_directory(char *path, int len, t_linfo *info)
 		merge_sort(&all_lst, sorted_merge_r_dir);
 	else
 		merge_sort(&all_lst, sorted_merge);
+
 	lst_print_all_color(all_lst, path, info);
 
 	if (info->flag & FLAG_R)
