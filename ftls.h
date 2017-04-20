@@ -20,6 +20,13 @@
 # include <sys/dir.h>
 # include <sys/stat.h>
 
+# include <sys/types.h>
+# include <pwd.h>
+# include <uuid/uuid.h>
+# include <grp.h>
+# include <uuid/uuid.h>
+# include <time.h>
+
 #define FLAG_A 1
 #define FLAG_R 2
 #define FLAG_CAP_R 4
@@ -40,20 +47,12 @@ typedef struct	s_linfo
 	int count;
 }				t_linfo;
 
-// typedef	struct		s_list
-// {
-// 	struct dirent	*dir;
-// 	size_t			dir_size;
-// 	struct s_list	*next;
-// }					t_list;
-
-// struct node
-// {
-//     int data;
-//     struct node* next;
-// };
-
-// t_list *f (t_list *a, t_list *b);
+typedef struct s_pre
+{
+  long long block_size;
+  long max_link;
+  long long max_bytes_nbr;
+}             t_pre;
 
 t_list *sorted_merge(t_list *a, t_list *b);
 t_list *sorted_merge_r_dir(t_list *a, t_list *b);
@@ -63,11 +62,20 @@ t_list *sorted_merge_file(t_list *a, t_list *b);
 void front_back_split(t_list *source, t_list **frontref, t_list **backref);
 void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *));
 
-
 int	list_directory(char *path, int len, t_linfo *info);
 void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, char *path);
 char	*get_path(char *path, char *name);
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info);
 char	*add_path(char *dname, char *path);
 
+void	print_l(struct stat sb, struct dirent *dir, char *path);
+t_pre *pre_display_l(t_pre *pre, char *path);
+void modi_time(char *s, struct stat sb);
+char  *cut_second(char *s);
+char	get_type(struct stat sb);
+
 #endif
+
+
+
+

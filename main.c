@@ -145,7 +145,7 @@ int main(int ac, char **av)
 
 	info = parse_argument(av, info);
 	print_unvalid(info->invalid);
-	print_file(info->file, info);//, int flag for r
+	print_file(info->file, info);
 	print_directory(info);
 	// free(info);
 	return (0);

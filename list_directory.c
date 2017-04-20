@@ -45,40 +45,16 @@ char	*add_path(char *dname, char *path)
 // }
 
 
-void	print_l(struct stat sb, struct dirent *dir)
-{
-	int bin;
-	char *str;
+// void	print_l(struct stat sb, struct dirent *dir)
+// {
+// 	(void)sb;
+// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
+// }
 
-	bin = (int)(sb.st_mode);
-	str = ft_itoa(bin);
-	if (str[0] == '1')
-		ft_putchar('-');
-	else if (str[0] == '4')
-		ft_putchar('d');
-	str++;
-	while (*++str)
-	{
-		if (*str == '0')
-			ft_putstr("---");
-		else if (*str == '1')
-			ft_putstr("--x")
-		else if (*str == '6')
-			ft_putstr("rwx");
-		else if (*str == '5')
-			ft_putchar("r-x");
-		else if (*str == '3')
-			ft_putchar("-wx");
-	}
-	ft_printf("%d   ", bin);
-	ft_printf(GREE"%s\n"CLN, dir->d_name);
-}
-
-void	print_l_file(struct stat sb, struct dirent *dir)
-{
-	ft_printf("%lo   ", sb.st_mode);
-	ft_printf("%s\n", dir->d_name);
-}
+// void	print_l(struct stat sb, struct dirent *dir)
+// {
+// 	ft_printf("%s\n", dir->d_name);
+// }
 
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 {
@@ -99,15 +75,15 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			return ;
 		}
 		if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_l(sb, dir);
+			print_l(sb, dir, path);
 		else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 			ft_printf(GREE"%s\n"CLN, dir->d_name);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
-			print_l_file(sb, dir);
+			print_l(sb, dir, path);
 		else if (dir->d_name[0] != '.')
 			ft_printf("%s\n", dir->d_name);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] == '.' && (info->flag & FLAG_A))
-			print_l_file(sb, dir);
+			print_l(sb, dir, path);
 		else if (dir->d_name[0] == '.' && (info->flag & FLAG_A))
 			ft_printf("%s\n", dir->d_name);
 		cur = cur->next;

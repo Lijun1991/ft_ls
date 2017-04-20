@@ -12,7 +12,7 @@
 
 NAME = ft_ls
 
-SRC = main.c sort_lst.c list_directory.c
+SRC = main.c sort_lst.c list_directory.c print_l.c
 
 OBJ = $(SRC:.c=.o)
 
