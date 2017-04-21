@@ -31,3 +31,9 @@ man 2 stat  lstat
 
 to creat a new file with set time:(year_month_date_hour_minutes_second)
 touch -t 201601111111.11 bla
+
+
+chmod
+To make this modification you would invoke the command: chmod a-rw file1
+To add the permissions above you would invoke the command: chmod a+rw file1
+
