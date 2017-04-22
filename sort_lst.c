@@ -12,9 +12,8 @@
 
 #include "ftls.h"
 
-t_list *sorted_merge_t(t_list *a, t_list *b, t_linfo *info)
+int	compare_fuc_rt(t_list *a, t_list *b, t_linfo *info)
 {
-	t_list *result = NULL;
 	struct dirent *dir;
 	struct dirent *diry;
 	struct stat sb;
@@ -22,10 +21,6 @@ t_list *sorted_merge_t(t_list *a, t_list *b, t_linfo *info)
 	char *sub_dir;
 	char *sub_dir1;
 
-	if (a == NULL)
-		return(b);
-	else if (b==NULL)
-		return(a);
 	dir = a->content;
 	diry = b->content;
 
@@ -35,100 +30,197 @@ t_list *sorted_merge_t(t_list *a, t_list *b, t_linfo *info)
 	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
 	{
 		perror("stat");
-		return (NULL);
+		return (-1);
 	}
-	if ((sb.st_mtime) > (sb1.st_mtime))
-	{
-		result = a;
-		result->next = sorted_merge_t(a->next, b, info);
-	}
-	else
-	{
-		result = b;
-		result->next = sorted_merge_t(a, b->next, info);
-	}
-	return(result);
+	return ((sb.st_mtime) <= (sb1.st_mtime));
 }
 
-t_list *sorted_merge_r_dir(t_list *a, t_list *b)
+static t_list *sorted_merge(t_list *a, t_list *b, t_linfo *info, int (*compare_fuc)(t_list *, t_list *, t_linfo *))
 {
 	t_list *result = NULL;
-	struct dirent *dir;
-	struct dirent *diry;
-
+	
 	if (a == NULL)
 		return(b);
 	else if (b==NULL)
 		return(a);
-	dir = a->content;
-	diry = b->content;
-	
-	if (ft_strcmp(dir->d_name, diry->d_name) > 0)
+
+	if (compare_fuc(a, b, info))//(sb.st_mtime) <= (sb1.st_mtime)
 	{
 		result = a;
-		result->next = sorted_merge_r_dir(a->next, b);
+		result->next = sorted_merge(a->next, b, info, compare_fuc);
 	}
 	else
 	{
 		result = b;
-		result->next = sorted_merge_r_dir(a, b->next);
+		result->next = sorted_merge(a, b->next, info, compare_fuc);
 	}
 	return(result);
 }
 
-t_list *sorted_merge_dir(t_list *a, t_list *b)
+int	compare_fuc_t(t_list *a, t_list *b, t_linfo *info)
 {
-	t_list *result = NULL;
+	struct dirent *dir;
+	struct dirent *diry;
+	struct stat sb;
+	struct stat sb1;
+	char *sub_dir;
+	char *sub_dir1;
+
+	dir = a->content;
+	diry = b->content;
+
+
+	sub_dir = add_path(dir->d_name, info->path);
+	sub_dir1 = add_path(diry->d_name, info->path);
+	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
+	{
+		perror("stat");
+		return (-1);
+	}
+	return ((sb.st_mtime) > (sb1.st_mtime));
+}
+
+
+
+// t_list *sorted_merge(t_list *a, t_list *b, t_linfo *info, (int)(*compare_fuc)(t_list *, t_list *))
+// {
+// 	t_list *result = NULL;
+	
+
+// 	if (a == NULL)
+// 		return(b);
+// 	else if (b==NULL)
+// 		return(a);
+	
+
+// 	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
+// 	{
+// 		perror("stat");
+// 		return (NULL);
+// 	}
+// 	if (compare_fuc_t(a, b))
+// 	{
+// 		result = a;
+// 		result->next = sorted_merge(a->next, b, info);
+// 	}
+// 	else
+// 	{
+// 		result = b;
+// 		result->next = sorted_merge(a, b->next, info);
+// 	}
+// 	return(result);
+// }
+
+int	compare_fuc_r_dir(t_list *a, t_list *b, t_linfo *info)
+{
 	struct dirent *dir;
 	struct dirent *diry;
 
-	if (a == NULL)
-		return(b);
-	else if (b==NULL)
-		return(a);
 	dir = a->content;
 	diry = b->content;
-	
-	if (ft_strcmp(dir->d_name, diry->d_name) <= 0)
-	{
-		result = a;
-		result->next = sorted_merge_dir(a->next, b);
-	}
-	else
-	{
-		result = b;
-		result->next = sorted_merge_dir(a, b->next);
-	}
-	return(result);
+	if (info)
+		;
+	return (ft_strcmp(dir->d_name, diry->d_name) > 0);
 }
 
-t_list *sorted_merge_file(t_list *a, t_list *b)
+// t_list *sorted_merge_r_dir(t_list *a, t_list *b, t_linfo *info)
+// {
+// 	t_list *result = NULL;
+
+// 	if (a == NULL)
+// 		return(b);
+// 	else if (b==NULL)
+// 		return(a);
+	
+
+// 	if ()
+// 	{
+// 		result = a;
+// 		result->next = sorted_merge_r_dir(a->next, b);
+// 	}
+// 	else
+// 	{
+// 		result = b;
+// 		result->next = sorted_merge_r_dir(a, b->next);
+// 	}
+// 	return(result);
+// }
+
+int	compare_fuc_dir(t_list *a, t_list *b, t_linfo *info)
 {
-	t_list *result = NULL;
+	struct dirent *dir;
+	struct dirent *diry;
+
+	dir = a->content;
+	diry = b->content;
+	if (info)
+		;
+	return (ft_strcmp(dir->d_name, diry->d_name) <= 0);
+}
+
+
+// t_list *sorted_merge_dir(t_list *a, t_list *b)
+// {
+// 	t_list *result = NULL;
+
+// 	if (a == NULL)
+// 		return(b);
+// 	else if (b==NULL)
+// 		return(a);
+	
+// 	if (ft_strcmp(dir->d_name, diry->d_name) <= 0)
+// 	{
+// 		result = a;
+// 		result->next = sorted_merge_dir(a->next, b);
+// 	}
+// 	else
+// 	{
+// 		result = b;
+// 		result->next = sorted_merge_dir(a, b->next);
+// 	}
+// 	return(result);
+// }
+
+int	compare_fuc_file(t_list *a, t_list *b, t_linfo *info)
+{
 	char *dir;
 	char *diry;
 
-	if (a == NULL)
-		return(b);
-	else if (b==NULL)
-		return(a);
 	dir = a->content;
 	diry = b->content;
-	
-	if (ft_strcmp(dir, diry) <= 0)
-	{
-		result = a;
-		result->next = sorted_merge_file(a->next, b);
-	}
-	else
-	{
-		result = b;
-		result->next = sorted_merge_file(a, b->next);
-	}
-	return(result);
+	if (info)
+		;
+	return (ft_strcmp(dir, diry) <= 0);
 }
 
-void front_back_split(t_list *source, t_list **frontref, t_list **backref)
+
+// t_list *sorted_merge_file(t_list *a, t_list *b)
+// {
+// 	t_list *result = NULL;
+// 	char *dir;
+// 	char *diry;
+
+// 	if (a == NULL)
+// 		return(b);
+// 	else if (b==NULL)
+// 		return(a);
+// 	dir = a->content;
+// 	diry = b->content;
+	
+// 	if (ft_strcmp(dir, diry) <= 0)
+// 	{
+// 		result = a;
+// 		result->next = sorted_merge_file(a->next, b);
+// 	}
+// 	else
+// 	{
+// 		result = b;
+// 		result->next = sorted_merge_file(a, b->next);
+// 	}
+// 	return(result);
+// }
+
+static void front_back_split(t_list *source, t_list **frontref, t_list **backref)
 {
 	t_list *fast;
 	t_list *slow;
@@ -156,7 +248,7 @@ void front_back_split(t_list *source, t_list **frontref, t_list **backref)
 	}
 }
 
-void merge_sort_time(t_list **headref, t_list *(*f)(t_list *, t_list *, t_linfo *), t_linfo *info)
+void merge_sort(t_list **headref, int (*compare_fuc)(t_list *, t_list *, t_linfo *), t_linfo *info)
 {
 	t_list *head = *headref;
 	t_list *a;
@@ -167,24 +259,24 @@ void merge_sort_time(t_list **headref, t_list *(*f)(t_list *, t_list *, t_linfo 
 	if ((head == NULL) || (head->next == NULL))
 		return;
 	front_back_split(head, &a, &b);
-	merge_sort_time(&a, f, info);
-	merge_sort_time(&b, f, info);
-	*headref = f(a, b, info);
+	merge_sort(&a, compare_fuc, info);
+	merge_sort(&b, compare_fuc, info);
+	*headref = sorted_merge(a, b, info, compare_fuc);
 }
 
-void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *))
-{
-	t_list *head = *headref;
-	t_list *a;
-	t_list *b;
+// void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *))
+// {
+// 	t_list *head = *headref;
+// 	t_list *a;
+// 	t_list *b;
  
-	a = NULL;
-	b = NULL;
-	if ((head == NULL) || (head->next == NULL))
-		return;
-	front_back_split(head, &a, &b);
-	merge_sort(&a, f);
-	merge_sort(&b, f);
-	*headref = f(a, b);
-}
+// 	a = NULL;
+// 	b = NULL;
+// 	if ((head == NULL) || (head->next == NULL))
+// 		return;
+// 	front_back_split(head, &a, &b);
+// 	merge_sort(&a, f);
+// 	merge_sort(&b, f);
+// 	*headref = f(a, b);
+// }
 

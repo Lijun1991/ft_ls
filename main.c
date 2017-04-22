@@ -103,7 +103,7 @@ void	print_unvalid(t_list *invalid)
 	t_list *cur;
 
 	cur = invalid;
-	merge_sort(&cur, sorted_merge_file);
+	merge_sort(&cur, compare_fuc_file, NULL);
 	while (cur)
 	{
 		ft_fprintf(2, "ls: %s: No such file or directory\n", (char*)cur->content);
@@ -139,9 +139,9 @@ void	print_file(t_list *file, t_linfo *info)
 	cur = file;
 	dir = NULL;
 	if (info->flag & FLAG_R)
-		merge_sort(&cur, sorted_merge_file);
+		merge_sort(&cur, compare_fuc_file, info);////??????
 	else
-		merge_sort(&cur, sorted_merge_file);
+		merge_sort(&cur, compare_fuc_file, info);
 	// if (flag & FLAG_T)
 	// 	merge_sort(&cur, sort_by_t)
 	// if (flag & FLAG_U)
@@ -173,7 +173,7 @@ void	print_directory(t_linfo *info)
 	t_list *cur;
 
 	cur = info->directory;
-	merge_sort(&cur, sorted_merge_file);
+	merge_sort(&cur, compare_fuc_file, info);
 	while (cur)
 	{
 		list_directory(cur->content, (int)ft_strlen((char*)cur->content), info, 0);

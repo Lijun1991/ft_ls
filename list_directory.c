@@ -135,12 +135,20 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 
 void	change_sort_way(t_list **lst, t_linfo *info)
 {
-	if (info->flag & FLAG_R)
-		merge_sort(lst, sorted_merge_r_dir);
+	if ((info->flag & FLAG_R) && (info->flag & FLAG_T))
+	{
+		merge_sort(lst, compare_fuc_file, info);
+		merge_sort(lst, compare_fuc_rt, info);
+	}
+	else if (info->flag & FLAG_R)
+		merge_sort(lst, compare_fuc_r_dir, info);
 	else if (info->flag & FLAG_T)
-		merge_sort_time(lst, sorted_merge_t, info);
+	{
+		merge_sort(lst, compare_fuc_file, info);
+		merge_sort(lst, compare_fuc_t, info);
+	}
 	else
-		merge_sort(lst, sorted_merge_dir);
+		merge_sort(lst, compare_fuc_dir, info);
 }
 
 int	list_directory(char *path, int len, t_linfo *info, int sign)
@@ -169,8 +177,6 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	info->path = ft_strdup(path);
 	while ((dir = readdir(dirp)))
 		get_lst(dir, &all_lst, &dir_lst, info);
-
-	// lst_print_all(all_lst);
 
 	change_sort_way(&all_lst, info);
 
