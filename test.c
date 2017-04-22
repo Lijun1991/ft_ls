@@ -46,7 +46,6 @@ int	main(int argc, char *argv[])
    case S_IFSOCK: printf("socket\n");                  break;
    default:       printf("unknown?\n");                break;
    }
-
    printf("I-node number:            %ld\n", (long) sb.st_ino);
 
    printf("Mode:                     %lo (octal)\n",
@@ -65,7 +64,7 @@ int	main(int argc, char *argv[])
 
    printf("Last status change:       %s", ctime(&sb.st_ctime));
    printf("Last file access:         %s", ctime(&sb.st_atime));
-   printf("Last file modification:   %s", ctime(&sb.st_mtime));
+   printf("Last file modification:   %ld", sb.st_mtime);
 
    exit(EXIT_SUCCESS);
 }

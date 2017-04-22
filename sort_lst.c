@@ -12,6 +12,38 @@
 
 #include "ftls.h"
 
+t_list *sorted_merge_t(t_list *a, t_list *b)
+{
+	t_list *result = NULL;
+	struct dirent *dir;
+	struct dirent *diry;
+	struct stat sb;
+	struct stat sb1;
+
+	if (a == NULL)
+		return(b);
+	else if (b==NULL)
+		return(a);
+	dir = a->content;
+	diry = b->content;
+	if (stat(dir->d_name, &sb) == -1 || stat(diry->d_name, &sb1) == -1)
+	{
+		perror("stat");
+		return (NULL);
+	}
+	if ((sb.st_mtime) > (sb1.st_mtime))
+	{
+		result = a;
+		result->next = sorted_merge_t(a->next, b);
+	}
+	else
+	{
+		result = b;
+		result->next = sorted_merge_t(a, b->next);
+	}
+	return(result);
+}
+
 t_list *sorted_merge_r_dir(t_list *a, t_list *b)
 {
 	t_list *result = NULL;
@@ -38,7 +70,7 @@ t_list *sorted_merge_r_dir(t_list *a, t_list *b)
 	return(result);
 }
 
-t_list *sorted_merge(t_list *a, t_list *b)//(void)(*f)(int flag)
+t_list *sorted_merge_dir(t_list *a, t_list *b)
 {
 	t_list *result = NULL;
 	struct dirent *dir;
@@ -54,12 +86,12 @@ t_list *sorted_merge(t_list *a, t_list *b)//(void)(*f)(int flag)
 	if (ft_strcmp(dir->d_name, diry->d_name) <= 0)
 	{
 		result = a;
-		result->next = sorted_merge(a->next, b);
+		result->next = sorted_merge_dir(a->next, b);
 	}
 	else
 	{
 		result = b;
-		result->next = sorted_merge(a, b->next);
+		result->next = sorted_merge_dir(a, b->next);
 	}
 	return(result);
 }
@@ -89,8 +121,6 @@ t_list *sorted_merge_file(t_list *a, t_list *b)
 	}
 	return(result);
 }
-
-// t_list *sorted_merge_unvalid(t_list *a, t_list *b)
 
 void front_back_split(t_list *source, t_list **frontref, t_list **backref)
 {

@@ -29,42 +29,13 @@ void modi_time(char *s, struct stat sb)
 	cur_time = time(NULL);
 	str = ft_strsplit(s, ' ');
 	ft_printf(" %s", str[1]);
-	ft_printf(" %s", str[2]);
+	ft_printf(" %2s", str[2]);
 	if ((long)cur_time - (long)sb.st_mtime > 15768000 || (long)cur_time - (long)sb.st_mtime < -15768000)
 		ft_printf(" %5d", ft_atoi(str[4]));
 	else
 		ft_printf(" %s", cut_second(str[3]));
 	free(str);
 	return ;
-}
-
-t_linfo *pre_display_l(t_linfo *info, char *path)
-{
-	DIR *dirp;
-	struct stat sb;
-	struct dirent *dir;
-
-	dirp = opendir(path);
-	if (dirp == NULL)
-	{
-		perror("dir no exit");
-		return (NULL);
-	}
-	while ((dir = readdir(dirp)))
-	{
-		if (stat(dir->d_name, &sb) == -1)
-		{
-			perror("stat2");
-			return (NULL);
-		}
-		info->max_link = sb.st_nlink > info->max_link ? sb.st_nlink : info->max_link;
-		info->max_bytes_nbr = sb.st_size > info->max_bytes_nbr ? sb.st_size : info->max_bytes_nbr;
-		info->block_size += (long long) sb.st_blocks;
-	}
-	ft_printf("total %lld\n", info->block_size);
-	// if (!closedir(dirp))
- //    	return (NULL);
-	return (info);
 }
 
 char	get_type(struct stat sb)
@@ -126,10 +97,18 @@ void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info)
 	ft_printf("  %s", t->gr_name);
 	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
 	modi_time(ctime(&sb.st_ctime), sb);
-	if (sign == 1)
-		ft_printf(GREE" %s\n"CLN, dir->d_name);
+	if (!dir)
+	{
+		if (info->is_file)
+			ft_printf(" %s\n", info->file_path);
+	}	
 	else
-		ft_printf(" %s\n", dir->d_name);
+	{
+		if (sign == 1)
+			ft_printf(GREE" %s\n"CLN, dir->d_name);
+		else
+			ft_printf(" %s\n", dir->d_name);
+	}
 }
 
 

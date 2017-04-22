@@ -39,44 +39,47 @@
 
 typedef struct	s_linfo
 {
-	// t_list *path;
-	t_list *invalid;
-	t_list *file;
-	t_list *directory;
-	int flag;
-	int count;
+	char *path;
+	char *file_path;
+	t_list *invalid;//
+	t_list *file;//
+	t_list *directory;//
+	int flag;//
+	int count;//
 	long long block_size;
 	long max_link;
 	long long max_bytes_nbr;
+	int is_file;
 }				t_linfo;
 
-// typedef struct s_pre
-// {
-//   long long block_size;
-//   long max_link;
-//   long long max_bytes_nbr;
-// }             t_pre;
-
-t_list *sorted_merge(t_list *a, t_list *b);
+t_list *sorted_merge_dir(t_list *a, t_list *b);
 t_list *sorted_merge_r_dir(t_list *a, t_list *b);
 t_list *sorted_merge_a_dir(t_list *a, t_list *b);
 t_list *sorted_merge_file(t_list *a, t_list *b);
+t_list *sorted_merge_t(t_list *a, t_list *b);
 
 void front_back_split(t_list *source, t_list **frontref, t_list **backref);
 void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *));
 
-int	list_directory(char *path, int len, t_linfo *info);
-void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, char *path);
+int	list_directory(char *path, int len, t_linfo *info, int sign);
+void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *info);
 char	*get_path(char *path, char *name);
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info);
 char	*add_path(char *dname, char *path);
 
 void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info);
-t_linfo *pre_display_l(t_linfo *pre, char *path);
+t_linfo *pre_display_l(t_linfo *info, struct stat sb);
 void modi_time(char *s, struct stat sb);
 char  *cut_second(char *s);
 char	get_type(struct stat sb);
 int	max_len(long long nbr);
+
+void	ft_lstfree(t_list *lst);
+void	get_max_space(t_linfo *info, struct stat sb);
+void	get_file_max_space(t_linfo *info, t_list *file);
+void	change_sort_way(t_list **lst, t_linfo *info);
+
+void	lst_print_all(t_list *lst);////
 
 #endif
 
