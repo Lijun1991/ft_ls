@@ -138,7 +138,7 @@ void	change_sort_way(t_list **lst, t_linfo *info)
 	if (info->flag & FLAG_R)
 		merge_sort(lst, sorted_merge_r_dir);
 	else if (info->flag & FLAG_T)
-		merge_sort(lst, sorted_merge_t);
+		merge_sort_time(lst, sorted_merge_t, info);
 	else
 		merge_sort(lst, sorted_merge_dir);
 }
@@ -165,6 +165,7 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 		perror("dir no exit");
 		return (2);
 	}
+	info->block_size = 0;
 	info->path = ft_strdup(path);
 	while ((dir = readdir(dirp)))
 		get_lst(dir, &all_lst, &dir_lst, info);

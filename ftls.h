@@ -56,7 +56,8 @@ t_list *sorted_merge_dir(t_list *a, t_list *b);
 t_list *sorted_merge_r_dir(t_list *a, t_list *b);
 t_list *sorted_merge_a_dir(t_list *a, t_list *b);
 t_list *sorted_merge_file(t_list *a, t_list *b);
-t_list *sorted_merge_t(t_list *a, t_list *b);
+t_list *sorted_merge_t(t_list *a, t_list *b, t_linfo *info);
+void merge_sort_time(t_list **headref, t_list *(*f)(t_list *, t_list *, t_linfo *), t_linfo *info);
 
 void front_back_split(t_list *source, t_list **frontref, t_list **backref);
 void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *));

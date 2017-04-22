@@ -12,13 +12,15 @@
 
 #include "ftls.h"
 
-t_list *sorted_merge_t(t_list *a, t_list *b)
+t_list *sorted_merge_t(t_list *a, t_list *b, t_linfo *info)
 {
 	t_list *result = NULL;
 	struct dirent *dir;
 	struct dirent *diry;
 	struct stat sb;
 	struct stat sb1;
+	char *sub_dir;
+	char *sub_dir1;
 
 	if (a == NULL)
 		return(b);
@@ -26,7 +28,11 @@ t_list *sorted_merge_t(t_list *a, t_list *b)
 		return(a);
 	dir = a->content;
 	diry = b->content;
-	if (stat(dir->d_name, &sb) == -1 || stat(diry->d_name, &sb1) == -1)
+
+	sub_dir = add_path(dir->d_name, info->path);
+	sub_dir1 = add_path(diry->d_name, info->path);
+
+	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
 	{
 		perror("stat");
 		return (NULL);
@@ -34,12 +40,12 @@ t_list *sorted_merge_t(t_list *a, t_list *b)
 	if ((sb.st_mtime) > (sb1.st_mtime))
 	{
 		result = a;
-		result->next = sorted_merge_t(a->next, b);
+		result->next = sorted_merge_t(a->next, b, info);
 	}
 	else
 	{
 		result = b;
-		result->next = sorted_merge_t(a, b->next);
+		result->next = sorted_merge_t(a, b->next, info);
 	}
 	return(result);
 }
@@ -150,6 +156,22 @@ void front_back_split(t_list *source, t_list **frontref, t_list **backref)
 	}
 }
 
+void merge_sort_time(t_list **headref, t_list *(*f)(t_list *, t_list *, t_linfo *), t_linfo *info)
+{
+	t_list *head = *headref;
+	t_list *a;
+	t_list *b;
+ 
+	a = NULL;
+	b = NULL;
+	if ((head == NULL) || (head->next == NULL))
+		return;
+	front_back_split(head, &a, &b);
+	merge_sort_time(&a, f, info);
+	merge_sort_time(&b, f, info);
+	*headref = f(a, b, info);
+}
+
 void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *))
 {
 	t_list *head = *headref;
@@ -165,3 +187,4 @@ void merge_sort(t_list **headref, t_list *(*f)(t_list *, t_list *))
 	merge_sort(&b, f);
 	*headref = f(a, b);
 }
+
