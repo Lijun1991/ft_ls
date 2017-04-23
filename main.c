@@ -98,12 +98,12 @@ void	ft_lstfree(t_list *lst)
 	}
 }
 
-void	print_unvalid(t_list *invalid)
+void	print_unvalid(t_list *invalid, t_linfo *info)
 {
 	t_list *cur;
 
 	cur = invalid;
-	merge_sort(&cur, compare_fuc_file, NULL);
+	merge_sort(&cur, compare_fuc_file, info);
 	while (cur)
 	{
 		ft_fprintf(2, "ls: %s: No such file or directory\n", (char*)cur->content);
@@ -120,9 +120,9 @@ void	get_file_max_space(t_linfo *info, t_list *file)
 	cur = file;
 	while (cur)
 	{
-		if (stat(cur->content, &sb) == -1)
+		if (stat((char*)cur->content, &sb) == -1)
 		{
-			perror("stat2");
+			perror("stat3");
 			return ;
 		}
 		get_max_space(info, sb);
@@ -138,22 +138,24 @@ void	print_file(t_list *file, t_linfo *info)
 
 	cur = file;
 	dir = NULL;
-	if (info->flag & FLAG_R)
-		merge_sort(&cur, compare_fuc_file, info);////??????
+	get_file_max_space(info, file);
+	if (info->flag & FLAG_R && info->flag & FLAG_T)
+	{
+		merge_sort(&cur, compare_fuc_file, info);
+		merge_sort(&cur, compare_fuc_rt_file, info);
+	}
+	else if (info->flag & FLAG_R)
+		merge_sort(&cur, compare_fuc_r_file, info);
+	else if (info->flag & FLAG_T)
+		merge_sort(&cur, compare_fuc_t_file, info);
 	else
 		merge_sort(&cur, compare_fuc_file, info);
-	// if (flag & FLAG_T)
-	// 	merge_sort(&cur, sort_by_t)
-	// if (flag & FLAG_U)
-	// 	merge_sort(&cur, sort_by_u)
-	
-	get_file_max_space(info, file);
 	while(cur != NULL)
 	{
 		if (info->flag & FLAG_L)
 		{
 			info->is_file = 1;
-			if (stat(cur->content, &sb) == -1)
+			if (stat((char*)cur->content, &sb) == -1)
 			{
 				perror("stat2");
 				return ;
@@ -190,7 +192,7 @@ int main(int ac, char **av)
 	ft_bzero(info, sizeof(t_linfo));
 
 	info = parse_argument(av, info);
-	print_unvalid(info->invalid);
+	print_unvalid(info->invalid,info);
 	print_file(info->file, info);
 	print_directory(info);
 	free(info);

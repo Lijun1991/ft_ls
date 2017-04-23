@@ -62,9 +62,10 @@ int	main(int argc, char *argv[])
    printf("Blocks allocated:         %lld\n",
            (long long) sb.st_blocks);
 
-   printf("Last status change:       %s", ctime(&sb.st_ctime));
+   // printf("Last status change:       %s", ctime(&sb.st_ctime));
+   printf("Last file access:         %ld\n", sb.st_atime);
    printf("Last file access:         %s", ctime(&sb.st_atime));
-   printf("Last file modification:   %ld", sb.st_mtime);
+   // printf("Last file modification:   %ld", sb.st_mtime);
 
    exit(EXIT_SUCCESS);
 }

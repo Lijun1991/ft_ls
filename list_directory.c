@@ -6,7 +6,7 @@
 /*   By: lwang <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/16 13:47:17 by lwang             #+#    #+#             */
-/*   Updated: 2017/04/16 13:47:19 by lwang            ###   ########.fr       */
+/*   Updated: 2017/04/22 22:17:54 by lwang            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,6 @@ void	lst_print_all(t_list *lst)
 	}
 }
 
-// void	print_l(struct stat sb, struct dirent *dir)
-// {
-// 	(void)sb;
-// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
-// }
-
-// void	print_l(struct stat sb, struct dirent *dir)
-// {
-// 	ft_printf("%s\n", dir->d_name);
-// }
-
 char	*get_path(char *path, char *name)
 {
 	char *dst;
@@ -73,7 +62,9 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 	char *sub_dir;
 
 	cur = lst;
-	if ((info->flag & FLAG_L) && (info->block_size))
+	if (info->is_file)
+		ft_printf("hello");
+	if ((info->flag & FLAG_L && info->block_size) || (info->flag & FLAG_L && info->is_file))
 		ft_printf("total %lld\n", info->block_size);
 	while(cur != NULL)
 	{
@@ -84,7 +75,11 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			perror("stat2");
 			return ;
 		}
-		if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		if (info->flag & FLAG_A)
+			ft_printf("%s\n", dir->d_name);
+		else if (info->flag & FLAG_A && info->flag & FLAG_L)
+			print_l(sb, dir, 1, info);
+		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 			print_l(sb, dir, 1, info);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
 			print_l(sb, dir, 0, info);
@@ -96,10 +91,9 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 		{
 			ft_printf("%s\n", dir->d_name);
 		}
-		else if ((info->flag & FLAG_L) && dir->d_name[0] == '.' && (info->flag & FLAG_A))
-			print_l(sb, dir, 0, info);
-		else if (dir->d_name[0] == '.' && (info->flag & FLAG_A))
-			ft_printf("%s\n", dir->d_name);
+		// else if ((info->flag & FLAG_L) && dir->d_name[0] == '.' && (info->flag & FLAG_A))
+		// 	print_l(sb, dir, 0, info);
+		//................need to think more when combine all -arlRt together.................
 		cur = cur->next;
 	}
 }
@@ -138,14 +132,14 @@ void	change_sort_way(t_list **lst, t_linfo *info)
 	if ((info->flag & FLAG_R) && (info->flag & FLAG_T))
 	{
 		merge_sort(lst, compare_fuc_file, info);
-		merge_sort(lst, compare_fuc_rt, info);
+		merge_sort(lst, compare_fuc_rt_dir, info);
 	}
 	else if (info->flag & FLAG_R)
 		merge_sort(lst, compare_fuc_r_dir, info);
 	else if (info->flag & FLAG_T)
 	{
 		merge_sort(lst, compare_fuc_file, info);
-		merge_sort(lst, compare_fuc_t, info);
+		merge_sort(lst, compare_fuc_t_dir, info);
 	}
 	else
 		merge_sort(lst, compare_fuc_dir, info);
