@@ -76,9 +76,14 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			return ;
 		}
 		if (info->flag & FLAG_A)
-			ft_printf("%s\n", dir->d_name);
-		else if (info->flag & FLAG_A && info->flag & FLAG_L)
-			print_l(sb, dir, 1, info);
+		{
+			if (info->flag & FLAG_L)
+				print_l(sb, dir, 1, info);
+			// else if (info->flag & FLAG_L && info->flag & FLAG_CAP_R)
+				
+			else
+				ft_printf("%s\n", dir->d_name);
+		}	
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 			print_l(sb, dir, 1, info);
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
@@ -91,9 +96,6 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 		{
 			ft_printf("%s\n", dir->d_name);
 		}
-		// else if ((info->flag & FLAG_L) && dir->d_name[0] == '.' && (info->flag & FLAG_A))
-		// 	print_l(sb, dir, 0, info);
-		//................need to think more when combine all -arlRt together.................
 		cur = cur->next;
 	}
 }
@@ -122,9 +124,11 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 		get_max_space(info, sb);
 	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
 	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-	{
 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
-	}
+	// if (info->flag & FLAG_A && dir->d_name[0] == '.') 
+	// 	{
+	// 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
+	// 	}
 }
 
 void	change_sort_way(t_list **lst, t_linfo *info)
