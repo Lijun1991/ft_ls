@@ -27,7 +27,7 @@ char	*add_path(char *dname, char *path)
 	return (dst);
 }
 
-void	lst_print_all(t_list *lst)
+/*void	lst_print_all(t_list *lst)
 {
 	t_list *cur;
 	struct dirent *dir;
@@ -43,6 +43,7 @@ void	lst_print_all(t_list *lst)
 		cur = cur->next;
 	}
 }
+*/
 
 char	*get_path(char *path, char *name)
 {
@@ -62,8 +63,8 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 	char *sub_dir;
 
 	cur = lst;
-	if (info->is_file)
-		ft_printf("hello");
+	//if (info->is_file)
+	//	ft_printf("hello");
 	if ((info->flag & FLAG_L && info->block_size) || (info->flag & FLAG_L && info->is_file))
 		ft_printf("total %lld\n", info->block_size);
 	while(cur != NULL)
@@ -124,7 +125,13 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 		get_max_space(info, sb);
 	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
 	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+	{
 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
+		if (info->flag & FLAG_A && ft_strlen(dir->d_name) > 1 && dir->d_name[2] != '.')
+		{
+			ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
+		}
+	}
 	// if (info->flag & FLAG_A && dir->d_name[0] == '.') 
 	// 	{
 	// 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
