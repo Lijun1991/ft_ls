@@ -31,9 +31,9 @@ void modi_time(char *s, struct stat sb)
 	ft_printf(" %s", str[1]);
 	ft_printf(" %2s", str[2]);
 	if ((long)cur_time - (long)sb.st_mtime > 15768000 || (long)cur_time - (long)sb.st_mtime < -15768000)
-		ft_printf(" %5d", ft_atoi(str[4]));
+		ft_printf(" %5d ", ft_atoi(str[4]));
 	else
-		ft_printf(" %s", cut_second(str[3]));
+		ft_printf(" %s ", cut_second(str[3]));
 	free(str);
 	return ;
 }
@@ -73,13 +73,13 @@ int	max_len(long long nbr)
 	return (i);
 }
 
-void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info)
+void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign, 
 {
 	struct passwd *s;
 	struct group *t;
 
-	s = getpwuid(getuid());
-	t = getgrgid(s->pw_gid);
+	s = getpwuid(sb.st_uid);
+	t = getgrgid(sb.st_gid);
 
 	ft_printf("%c", get_type(sb));
 	ft_printf("%c", sb.st_mode & S_IRUSR ? 'r' : '-');
@@ -100,14 +100,21 @@ void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info)
 	if (!dir)
 	{
 		if (info->is_file)
-			ft_printf(" %s\n", info->file_path);
+		{
+			ft_printf("%s", info->file_path);
+			if (((sb.st_mode & S_IFMT) == S_IFLNK))
+			{
+				ft_printf(" -> %s\n", get_link_path(info->file_path));
+			}
+		}
 	}	
 	else
 	{
-		if (sign == 1)
-			ft_printf(GREE" %s\n"CLN, dir->d_name);
-		else
-			ft_printf(" %s\n", dir->d_name);
+		print_helper(dir, sb);
+		// if (sign == 1)
+		// 	ft_printf(" %s\n", dir->d_name);
+		// else
+			// ft_printf(" %s\n", dir->d_name);
 	}
 }
 

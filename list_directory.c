@@ -55,6 +55,36 @@ char	*get_path(char *path, char *name)
 	return (dst);
 }
 
+char *get_link_path(char *path)
+{
+	ssize_t len;
+	int tmp;
+	char *s;
+
+	len = 0;
+	tmp = 0;
+	s = (char*)malloc(sizeof(char) * 226);
+	tmp = readlink(path, s, 225);
+	if (tmp != -1)
+		len = tmp;
+	s[len] = '\0';
+	return (s);
+}
+
+void	print_helper(struct dirent *dir, struct stat sb)
+{
+	if (((sb.st_mode & S_IFMT) == S_IFLNK))
+	{
+		// ft_printf("hello");
+		ft_printf("%s -> %s\n", dir->d_name, get_link_path(dir->d_name));
+	}
+	else 
+	{
+		// ft_printf("hello4");
+		ft_printf("%s\n", dir->d_name);
+	}
+}
+
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 {
 	t_list *cur;
@@ -71,38 +101,75 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 	{
 		dir = cur->content;
 		sub_dir = add_path(dir->d_name, path);
-		if (stat(sub_dir, &sb) == -1)
+		if (lstat(sub_dir, &sb) == -1)
 		{
 			perror("stat2");
 			return ;
 		}
 
 		if (info->flag & FLAG_A && info->flag & FLAG_L && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_l(sb, dir, 1, info);
+			print_l(sb, dir, info);//1
 		else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] != '.')
-			print_l(sb, dir, 0, info);
+			print_l(sb, dir, info);//0
 		else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] == '.')
-			print_l(sb, dir, 1, info);
+		{
+			// ft_printf("hello1");
+			print_l(sb, dir, info);//1
+		}
 
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			ft_printf(GREE"%s\n"CLN, dir->d_name);
+			print_helper(dir, sb);
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.')
-			ft_printf("%s\n", dir->d_name);
+		{
+			// ft_printf("hello2");
+			print_helper(dir, sb);
+		}
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
-			ft_printf(GREE"%s\n"CLN, dir->d_name);
+			print_helper(dir, sb);
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.')
-			ft_printf("%s\n", dir->d_name);
+		{
+			// ft_printf("hello3");
+			print_helper(dir, sb);
+		}
 
 
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_l(sb, dir, 1, info);
+			print_l(sb, dir, info);//1
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
-			print_l(sb, dir, 0, info);
+			print_l(sb, dir, info);//0
 
 		else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			ft_printf(GREE"%s\n"CLN, dir->d_name);
+			print_helper(dir, sb);
 		else if (dir->d_name[0] != '.')
-			ft_printf("%s\n", dir->d_name);
+			print_helper(dir, sb);
+
+
+		// if (info->flag & FLAG_A && info->flag & FLAG_L && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		// 	print_l(sb, dir, info);//1
+		// else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] != '.')
+		// 	print_l(sb, dir, info);//0
+		// else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] == '.')
+		// 	print_l(sb, dir, info);//1
+
+		// else if (info->flag & FLAG_A && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
+		// else if (info->flag & FLAG_A && dir->d_name[0] != '.')
+		// 	ft_printf("%s\n", dir->d_name);
+		// else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
+		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
+		// else if (info->flag & FLAG_A && dir->d_name[0] == '.')
+		// 	ft_printf("%s\n", dir->d_name);
+
+
+		// else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		// 	print_l(sb, dir, info);//1
+		// else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
+		// 	print_l(sb, dir, info);//0
+
+		// else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
+		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
+		// else if (dir->d_name[0] != '.')
+		// 	ft_printf("%s\n", dir->d_name);
 
 		cur = cur->next;
 	}
@@ -119,11 +186,9 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 {
 	struct stat sb;
 	char *sub_dir;
-	// int check;//check if dir have anything else other than . and .. and to print total blocksize = 0;
 
-	// check = 0;
 	sub_dir = add_path(dir->d_name, info->path);
-	if (stat(sub_dir, &sb) == -1)
+	if (lstat(sub_dir, &sb) == -1)
 	{
 		perror("stat1");
 		return ;
@@ -132,6 +197,7 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 		get_max_space(info, sb);
 	else if (dir->d_name[0] != '.' && (info->flag & FLAG_L))
 		get_max_space(info, sb);
+
 	ft_lstadd(all_lst, ft_lstnew(dir, dir->d_reclen));
 	if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 	{
@@ -145,7 +211,7 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 	}
 	if (dir->d_name[0] != '.')
 		info->is_dir = 1;
-	// if (check)
+	// if (dir->d_name[0] == '.')
 	// 	info->is_dir = 1;
 }
 
@@ -198,7 +264,6 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 
 	change_sort_way(&all_lst, info);
 
-	// lst_print_all(dir_lst);
 	lst_print_all_color(all_lst, path, info);
 
 	change_sort_way(&dir_lst, info);

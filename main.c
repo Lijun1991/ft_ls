@@ -67,7 +67,7 @@ int	get_arg(t_linfo *info, char *av)
 		{
 			ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
-		else if (stat(av, &sb) == -1)
+		else if (lstat(av, &sb) == -1)
 			ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		else
 			ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
@@ -119,7 +119,7 @@ void	get_file_max_space(t_linfo *info, t_list *file)
 	cur = file;
 	while (cur)
 	{
-		if (stat((char*)cur->content, &sb) == -1)
+		if (lstat((char*)cur->content, &sb) == -1)
 		{
 			perror("stat3");
 			return ;
@@ -154,13 +154,13 @@ void	print_file(t_list *file, t_linfo *info)
 		if (info->flag & FLAG_L)
 		{
 			info->is_file = 1;
-			if (stat((char*)cur->content, &sb) == -1)
+			if (lstat((char*)cur->content, &sb) == -1)
 			{
 				perror("stat2");
 				return ;
 			}
 			info->file_path = ft_strdup((char*)cur->content);
-			print_l(sb, dir, 0, info);
+			print_l(sb, dir, info);//0
 		}
 		else
 			ft_printf("%s\n", (char*)cur->content);

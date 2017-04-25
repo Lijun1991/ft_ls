@@ -26,6 +26,7 @@
 # include <grp.h>
 # include <uuid/uuid.h>
 # include <time.h>
+#include <unistd.h>
 
 #define FLAG_A 1
 #define FLAG_R 2
@@ -78,7 +79,7 @@ char	*get_path(char *path, char *name);
 void	lst_print_all_color(t_list *lst, char *path, t_linfo *info);
 char	*add_path(char *dname, char *path);
 
-void	print_l(struct stat sb, struct dirent *dir, int sign, t_linfo *info);
+void	print_l(struct stat sb, struct dirent *dir, t_linfo *info);
 t_linfo *pre_display_l(t_linfo *info, struct stat sb);
 void modi_time(char *s, struct stat sb);
 char  *cut_second(char *s);
@@ -91,6 +92,8 @@ void	get_file_max_space(t_linfo *info, t_list *file);
 void	change_sort_way(t_list **lst, t_linfo *info);
 
 void	lst_print_all(t_list *lst);////
+char *get_link_path(char *path);
+void	print_helper(struct dirent *dir, struct stat sb);
 
 #endif
 

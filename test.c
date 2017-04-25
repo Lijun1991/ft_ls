@@ -15,21 +15,31 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int	main(int argc, char *argv[])
 {
    struct stat sb;
+   ssize_t len;
+   int tmp;
+   char *s;
+   char *dst;
 
+   s = (char*)malloc(sizeof(char) * 225);
    if (argc != 2) {
        fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
        exit(EXIT_FAILURE);
    }
 
-   if (stat(argv[1], &sb) == -1) {
+   if (lstat(argv[1], &sb) == -1) {
        perror("stat");
        exit(EXIT_FAILURE);
    }
-
+   tmp = readlink(argv[1], s, 225);
+   if (tmp != -1)
+      len = tmp;
+    s[len + 1] = '\0';
+   printf("link is    %s\n", s);
    printf("Last status change:       %s", ctime(&sb.st_ctime));
    printf("ID of containing device:  [%lx,%lx]\n",
        (long) major(sb.st_dev), (long) minor(sb.st_dev));
@@ -66,6 +76,7 @@ int	main(int argc, char *argv[])
    printf("Last file access:         %ld\n", sb.st_atime);
    printf("Last file access:         %s", ctime(&sb.st_atime));
    // printf("Last file modification:   %ld", sb.st_mtime);
+
 
    exit(EXIT_SUCCESS);
 }

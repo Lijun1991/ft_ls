@@ -27,7 +27,7 @@ int	compare_fuc_rt_dir(t_list *a, t_list *b, t_linfo *info)
 	sub_dir = add_path(dir->d_name, info->path);
 	sub_dir1 = add_path(diry->d_name, info->path);
 
-	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
+	if (lstat(sub_dir, &sb) == -1 || lstat(sub_dir1, &sb1) == -1)
 	{
 		perror("stat");
 		return (-1);
@@ -61,7 +61,7 @@ int	compare_fuc_t_dir(t_list *a, t_list *b, t_linfo *info)
 
 	sub_dir = add_path(dir->d_name, info->path);
 	sub_dir1 = add_path(diry->d_name, info->path);
-	if (stat(sub_dir, &sb) == -1 || stat(sub_dir1, &sb1) == -1)
+	if (lstat(sub_dir, &sb) == -1 || lstat(sub_dir1, &sb1) == -1)
 	{
 		perror("stat");
 		return (-1);
@@ -92,7 +92,7 @@ int	compare_fuc_rt_file(t_list *a, t_list *b, t_linfo *info)
 	file_name = a->content;
 	file_name1 = b->content;
 
-	if (stat(file_name, &sb) == -1 || stat(file_name1, &sb1) == -1)
+	if (lstat(file_name, &sb) == -1 || lstat(file_name1, &sb1) == -1)
 	{
 		perror("stat");
 		return (-1);
@@ -111,7 +111,7 @@ int	compare_fuc_t_file(t_list *a, t_list *b, t_linfo *info)
 	file_name = a->content;
 	file_name1 = b->content;
 
-	if (stat(file_name, &sb) == -1 || stat(file_name1, &sb1) == -1)
+	if (lstat(file_name, &sb) == -1 || lstat(file_name1, &sb1) == -1)
 	{
 		perror("stat");
 		return (-1);
