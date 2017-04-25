@@ -55,7 +55,7 @@ char	*get_path(char *path, char *name)
 	return (dst);
 }
 
-char *get_link_path(char *path)
+char *get_link_path(char *lname, char *lpath)
 {
 	ssize_t len;
 	int tmp;
@@ -64,19 +64,19 @@ char *get_link_path(char *path)
 	len = 0;
 	tmp = 0;
 	s = (char*)malloc(sizeof(char) * 226);
-	tmp = readlink(path, s, 225);
+	tmp = readlink(get_path(lpath, lname), s, 225);
 	if (tmp != -1)
 		len = tmp;
 	s[len] = '\0';
 	return (s);
 }
 
-void	print_helper(struct dirent *dir, struct stat sb)
+void	print_helper(struct dirent *dir, struct stat sb, char *path)
 {
 	if (((sb.st_mode & S_IFMT) == S_IFLNK))
 	{
 		// ft_printf("hello");
-		ft_printf("%s -> %s\n", dir->d_name, get_link_path(dir->d_name));
+		ft_printf("%s -> %s\n", dir->d_name, get_link_path(dir->d_name, path));
 	}
 	else 
 	{
@@ -85,7 +85,7 @@ void	print_helper(struct dirent *dir, struct stat sb)
 	}
 }
 
-void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
+void	lst_print_all_rec(t_list *lst, t_linfo *info)
 {
 	t_list *cur;
 	struct stat sb;
@@ -100,7 +100,7 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 	while(cur != NULL)
 	{
 		dir = cur->content;
-		sub_dir = add_path(dir->d_name, path);
+		sub_dir = add_path(dir->d_name, info->path);
 		if (lstat(sub_dir, &sb) == -1)
 		{
 			perror("stat2");
@@ -112,25 +112,16 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 		else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] != '.')
 			print_l(sb, dir, info);//0
 		else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] == '.')
-		{
-			// ft_printf("hello1");
 			print_l(sb, dir, info);//1
-		}
 
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb);
+			print_helper(dir, sb, info->path);
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.')
-		{
-			// ft_printf("hello2");
-			print_helper(dir, sb);
-		}
+			print_helper(dir, sb, info->path);
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb);
+			print_helper(dir, sb, info->path);
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.')
-		{
-			// ft_printf("hello3");
-			print_helper(dir, sb);
-		}
+			print_helper(dir, sb, info->path);
 
 
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
@@ -139,9 +130,9 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			print_l(sb, dir, info);//0
 
 		else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb);
+			print_helper(dir, sb, info->path);
 		else if (dir->d_name[0] != '.')
-			print_helper(dir, sb);
+			print_helper(dir, sb, info->path);
 
 
 		// if (info->flag & FLAG_A && info->flag & FLAG_L && ((sb.st_mode & S_IFMT) == S_IFDIR))
@@ -204,15 +195,19 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 		info->is_dir = 1;
 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
 	}
-	if (dir->d_name[0] == '.' && info->flag & FLAG_A && ft_strlen(dir->d_name) > 1 && dir->d_name[1] != '.')
+	if (dir->d_name[0] == '.' && info->flag & FLAG_A && ft_strlen(dir->d_name) > 1 && dir->d_name[1] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
 	{
 		info->is_dir = 1;
 		ft_lstadd(dir_lst, ft_lstnew(dir, dir->d_reclen));
 	}
+	if (info->flag & FLAG_A)
+		info->is_dir = 1;
+	// if (info->flag & FLAG_A)
+	// 	info->is_dir = 1;
 	if (dir->d_name[0] != '.')
 		info->is_dir = 1;
-	// if (dir->d_name[0] == '.')
-	// 	info->is_dir = 1;
+	// if (info->is_dir)
+	// 	ft_printf("hello");
 }
 
 
@@ -258,13 +253,16 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	}
 	info->block_size = 0;
 	info->is_dir = 0;
+	info->max_bytes_nbr = 0;
+	info->max_link = 0;
+
 	info->path = ft_strdup(path);
 	while ((dir = readdir(dirp)))
 		get_lst(dir, &all_lst, &dir_lst, info);
 
 	change_sort_way(&all_lst, info);
 
-	lst_print_all_color(all_lst, path, info);
+	lst_print_all_rec(all_lst, info);
 
 	change_sort_way(&dir_lst, info);
 

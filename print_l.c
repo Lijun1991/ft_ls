@@ -96,21 +96,20 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	ft_printf(" %s", s->pw_name);
 	ft_printf("  %s", t->gr_name);
 	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
-	modi_time(ctime(&sb.st_ctime), sb);
-	if (!dir)
+	modi_time(ctime(&sb.st_mtime), sb);
+	if (!dir && info->is_file)
 	{
-		if (info->is_file)
+		if (((sb.st_mode & S_IFMT) == S_IFLNK))
 		{
-			ft_printf("%s", info->file_path);
-			if (((sb.st_mode & S_IFMT) == S_IFLNK))
-			{
-				ft_printf(" -> %s\n", get_link_path(info->file_path));
-			}
+			// ft_printf("%s", info->file_path);
+			ft_printf("%s -> %s\n", info->file_path, get_link_path(info->file_path, info->path));
 		}
+		else
+			ft_printf("%s\n", info->file_path);
 	}	
 	else
 	{
-		print_helper(dir, sb);
+		print_helper(dir, sb, info->path);
 		// if (sign == 1)
 		// 	ft_printf(" %s\n", dir->d_name);
 		// else

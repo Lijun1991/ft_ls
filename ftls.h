@@ -76,7 +76,7 @@ int	compare_fuc_file(t_list *a, t_list *b, t_linfo *info);
 int	list_directory(char *path, int len, t_linfo *info, int sign);
 void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *info);
 char	*get_path(char *path, char *name);
-void	lst_print_all_color(t_list *lst, char *path, t_linfo *info);
+void	lst_print_all_rec(t_list *lst, t_linfo *info);
 char	*add_path(char *dname, char *path);
 
 void	print_l(struct stat sb, struct dirent *dir, t_linfo *info);
@@ -92,8 +92,8 @@ void	get_file_max_space(t_linfo *info, t_list *file);
 void	change_sort_way(t_list **lst, t_linfo *info);
 
 void	lst_print_all(t_list *lst);////
-char *get_link_path(char *path);
-void	print_helper(struct dirent *dir, struct stat sb);
+char *get_link_path(char *lname, char *lpath);
+void	print_helper(struct dirent *dir, struct stat sb, char *path);
 
 #endif
 
