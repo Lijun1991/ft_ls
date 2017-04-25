@@ -17,7 +17,7 @@ char  *cut_second(char *s)
 	char *dst;
 
 	dst = ft_strnew(6);
-	strlcat(dst, s, 6);
+	ft_strlcat(dst, s, 6);
 	return (dst);
 }
 

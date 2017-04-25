@@ -88,8 +88,10 @@ void	lst_print_all_color(t_list *lst, char *path, t_linfo *info)
 			ft_printf(GREE"%s\n"CLN, dir->d_name);
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.')
 			ft_printf("%s\n", dir->d_name);
-		else if (info->flag & FLAG_A && dir->d_name[0] == '.')
+		else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
 			ft_printf(GREE"%s\n"CLN, dir->d_name);
+		else if (info->flag & FLAG_A && dir->d_name[0] == '.')
+			ft_printf("%s\n", dir->d_name);
 
 
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
