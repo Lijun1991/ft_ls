@@ -162,6 +162,9 @@ void	print_file(t_list *file, t_linfo *info)
 			info->file_path = ft_strdup((char*)cur->content);
 			print_l(sb, dir, info);//0
 		}
+		// else if (((sb.st_mode & S_IFMT) == S_IFDIR) && !(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
+		// 	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
+		// 	ft_fprintf(2, "ft_ls: %s: Permission denied\n", (char*)cur->content);
 		else
 			ft_printf("%s\n", (char*)cur->content);
 		cur = cur->next;

@@ -93,7 +93,7 @@ void	change_sort_way(t_list **lst, t_linfo *info);
 
 void	lst_print_all(t_list *lst);////
 char *get_link_path(char *lname, char *lpath);
-void	print_helper(struct dirent *dir, struct stat sb, char *path);
+void	print_helper(struct dirent *dir, struct stat sb, char *path, t_linfo *info);
 
 #endif
 

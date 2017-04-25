@@ -99,9 +99,8 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	modi_time(ctime(&sb.st_mtime), sb);
 	if (!dir && info->is_file)
 	{
-		if (((sb.st_mode & S_IFMT) == S_IFLNK))
+		if (((sb.st_mode & S_IFMT) == S_IFLNK) && (info->flag & FLAG_L))
 		{
-			// ft_printf("%s", info->file_path);
 			ft_printf("%s -> %s\n", info->file_path, get_link_path(info->file_path, info->path));
 		}
 		else
@@ -109,7 +108,7 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	}	
 	else
 	{
-		print_helper(dir, sb, info->path);
+		print_helper(dir, sb, info->path, info);
 		// if (sign == 1)
 		// 	ft_printf(" %s\n", dir->d_name);
 		// else

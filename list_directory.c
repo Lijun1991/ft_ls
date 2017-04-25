@@ -71,16 +71,14 @@ char *get_link_path(char *lname, char *lpath)
 	return (s);
 }
 
-void	print_helper(struct dirent *dir, struct stat sb, char *path)
+void	print_helper(struct dirent *dir, struct stat sb, char *path, t_linfo *info)
 {
-	if (((sb.st_mode & S_IFMT) == S_IFLNK))
+	if (((sb.st_mode & S_IFMT) == S_IFLNK) && (info->flag & FLAG_L))
 	{
-		// ft_printf("hello");
 		ft_printf("%s -> %s\n", dir->d_name, get_link_path(dir->d_name, path));
 	}
 	else 
 	{
-		// ft_printf("hello4");
 		ft_printf("%s\n", dir->d_name);
 	}
 }
@@ -115,13 +113,13 @@ void	lst_print_all_rec(t_list *lst, t_linfo *info)
 			print_l(sb, dir, info);//1
 
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 		else if (info->flag & FLAG_A && dir->d_name[0] != '.')
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 		else if (info->flag & FLAG_A && dir->d_name[0] == '.')
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 
 
 		else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
@@ -130,9 +128,9 @@ void	lst_print_all_rec(t_list *lst, t_linfo *info)
 			print_l(sb, dir, info);//0
 
 		else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 		else if (dir->d_name[0] != '.')
-			print_helper(dir, sb, info->path);
+			print_helper(dir, sb, info->path, info);
 
 
 		// if (info->flag & FLAG_A && info->flag & FLAG_L && ((sb.st_mode & S_IFMT) == S_IFDIR))
@@ -181,8 +179,8 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 	sub_dir = add_path(dir->d_name, info->path);
 	if (lstat(sub_dir, &sb) == -1)
 	{
-		perror("stat1");
-		return ;
+		// perror("stat1");
+		exit(1) ;
 	}
 	if ((info->flag & FLAG_L) && (info->flag & FLAG_A))
 		get_max_space(info, sb);
@@ -206,8 +204,6 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 	// 	info->is_dir = 1;
 	if (dir->d_name[0] != '.')
 		info->is_dir = 1;
-	// if (info->is_dir)
-	// 	ft_printf("hello");
 }
 
 
