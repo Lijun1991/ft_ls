@@ -65,7 +65,6 @@ int	get_arg(t_linfo *info, char *av)
 		dirp = opendir(av);
 		if (dirp != NULL)
 		{
-			//ft_printf("hah%s\n", av);
 			ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
 		else if (stat(av, &sb) == -1)

@@ -50,6 +50,7 @@ typedef struct	s_linfo
 	long max_link;
 	long long max_bytes_nbr;
 	int is_file;
+	int is_dir;// print total blocksize = 0 while only one file contained, .  and .. and one file
 }				t_linfo;
 
 void merge_sort(t_list **headref, int (*compare_fuc)(t_list *, t_list *, t_linfo *), t_linfo *info);

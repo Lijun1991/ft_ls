@@ -81,10 +81,6 @@ int	compare_fuc_dir(t_list *a, t_list *b, t_linfo *info)
 }
 
 
-
-
-
-
 int	compare_fuc_rt_file(t_list *a, t_list *b, t_linfo *info)
 {
 	char *file_name;
