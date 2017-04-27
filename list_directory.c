@@ -242,8 +242,13 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	all_lst = NULL;
 	dir_lst = NULL;
 
-	if (info->invalid || info->file || info->count >= 3)
+	if (info->invalid || info->file)
 		ft_printf("\n%s:\n", path);
+	else if (info->count_arg > 1 && info->dir_sign == 1)
+		ft_printf("%s:\n", path);
+	else if (info->count_arg > 1 && info->dir_sign > 1)
+		ft_printf("\n%s:\n", path);
+
 	if (info->flag & FLAG_CAP_R && sign)
 		ft_printf("\n%s:\n", path);
 

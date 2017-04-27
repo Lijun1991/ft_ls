@@ -94,9 +94,13 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	ft_printf("%c", sb.st_mode & S_IWOTH ? 'w' : '-');
 	ft_printf("%c", sb.st_mode & S_IXOTH ? (sb.st_mode & S_ISVTX ? 't' : 'x') : (sb.st_mode & S_ISVTX ? 'T' : '-'));
 
+	// if (listxattr(info->path, NULL, 0, XATTR_NOFOLLOW) == 0)
+	// 	ft_printf("@");
+	// else
+	// 	perror("listxattr");
+
 	ft_printf("  %*ld", max_len(info->max_link), (long)sb.st_nlink);
 	ft_printf(" %-*s  %-*s", info->max_on, s->pw_name, info->max_gn, t->gr_name);
-	// ft_printf("hahah%d %d hahha", info->max_on, info->max_gn);
 	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
 	modi_time(ctime(&sb.st_mtime), sb);
 	if (!dir && info->is_file)

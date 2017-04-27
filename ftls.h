@@ -27,6 +27,7 @@
 # include <uuid/uuid.h>
 # include <time.h>
 #include <unistd.h>
+#include <sys/xattr.h>
 
 #define FLAG_A 1
 #define FLAG_R 2
@@ -46,6 +47,7 @@ typedef struct	s_linfo
 	t_list *file;//
 	t_list *directory;//
 	int flag;//
+	int count_arg;
 
 	long long block_size;
 	long max_link;
@@ -54,6 +56,7 @@ typedef struct	s_linfo
 	int max_gn;//max group name 
 	int is_file;
 	int is_dir;// print total blocksize = 0 while only one file contained, .  and .. and one file
+	int dir_sign;
 }				t_linfo;
 
 void merge_sort(t_list **headref, int (*compare_fuc)(t_list *, t_list *, t_linfo *), t_linfo *info);
@@ -96,6 +99,8 @@ void	change_sort_way(t_list **lst, t_linfo *info);
 void	lst_print_all(t_list *lst);////
 char *get_link_path(char *lname, char *lpath);
 void	print_helper(struct dirent *dir, struct stat sb, char *path, t_linfo *info);
+
+void	print_link(char *av, t_linfo *info);
 
 #endif
 

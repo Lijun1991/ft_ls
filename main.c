@@ -36,8 +36,10 @@ void  get_flag(char *av, int *flag)
 			*flag |= FLAG_U;
 		else
 		{
-			ft_printf("ft_ls: illegal option -- %c\n", *av);
-			ft_printf("usage: ft_ls [-arRtl1fnu] [file ...]\n");
+			ft_printf("ls: illegal option -- %c\n", *av);
+			ft_printf("usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]\n");
+			// ft_printf("ft_ls: illegal option -- %c\n", *av);
+			// ft_printf("usage: ft_ls [-arRtl1fnu] [file ...]\n");
 			exit(1);
 		}
 	}
@@ -55,22 +57,101 @@ char	**parse_flag(char **av, int *flag)
 	return (av);
 }
 
+char *get_link_file(char *link_name)
+{
+	ssize_t len;
+	int tmp;
+	char *s;
+
+	len = 0;
+	tmp = 0;
+	s = (char*)malloc(sizeof(char) * 226);
+	tmp = readlink(link_name, s, 225);
+	if (tmp != -1)
+		len = tmp;
+	s[len] = '\0';
+	return (s);
+}
+
+void	print_link(char *av, t_linfo *info)
+{
+	struct stat sb;
+	char *link;
+
+	link = get_link_file(av);
+	if (lstat(link, &sb) == -1)
+		ft_lstadd(&info->invalid, ft_lstnew(link, (int)ft_strlen(link) + 1));
+	else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+	{
+		if (!(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
+ 	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
+		{
+			ft_fprintf(2, "ls: %s: Permission denied\n", av);//ft_ls
+			exit(1);
+		}
+		ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
+	}
+	else// if ((sb.st_mode & S_IFMT) == S_IFREG)
+	{
+		ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
+	}
+
+}
+
 int	get_arg(t_linfo *info, char *av)
 {
-	DIR *dirp;
+	// DIR *dirp;
 	struct stat sb;
 
 	if (av)
 	{
-		dirp = opendir(av);
-		if (dirp != NULL)
+		if (ft_strcmp(av, "") == 0)
 		{
+			ft_fprintf(2, "ls: fts_open: No such file or directory\n");
+			exit(1);
+		}
+
+		if (lstat(av, &sb) == -1)
+		{
+			// ft_printf("it's invalid\n");
+			ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		}
+		if ((sb.st_mode & S_IFMT) == S_IFLNK)
+		{
+			print_link(av, info);
+			// av = ft_strdup(get_link_file(av));
+			// lstat(av, &sb);
+		}
+		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		{
+			// ft_printf("it's dir\n");
+			if (!(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
+	 	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
+			{
+				ft_fprintf(2, "ls: %s: Permission denied\n", av);//ft_ls
+				exit(1);
+			}
 			ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
-		else if (lstat(av, &sb) == -1)
-			ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
-		else
+		else if ((sb.st_mode & S_IFMT) == S_IFREG)
+		{
+			// ft_printf("it's file\n");
 			ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		}
+		// else
+		// {
+		// 	ft_printf("something else");
+		// 	exit(1);
+		// }
+		// dirp = opendir(av);
+		// if (dirp != NULL)
+		// {
+		// 	ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		// }
+		// else if (lstat(av, &sb) == -1)
+		// 	ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
+		// else
+		// 	ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
 	}
 	return (0);
 }
@@ -79,9 +160,13 @@ t_linfo	*parse_argument(char **av, t_linfo *info)
 {
 	av = parse_flag(av, &info->flag);
 	if (*av == NULL)
+	{
+		
 		ft_lstadd(&info->directory, ft_lstnew(".", 2));
+	}
 	while (*av != NULL)
 	{
+		info->count_arg++;
 		get_arg(info, *av++);
 	}
 	return (info);
@@ -121,7 +206,7 @@ void	get_file_max_space(t_linfo *info, t_list *file)
 		if (lstat((char*)cur->content, &sb) == -1)
 		{
 			perror("stat3");
-			return ;
+			exit(1);
 		}
 		get_max_space(info, sb);
 		cur = cur->next;
@@ -156,14 +241,11 @@ void	print_file(t_list *file, t_linfo *info)
 			if (lstat((char*)cur->content, &sb) == -1)
 			{
 				perror("stat2");
-				return ;
+				exit(1);
 			}
 			info->file_path = ft_strdup((char*)cur->content);
 			print_l(sb, dir, info);//0
 		}
-		// else if (((sb.st_mode & S_IFMT) == S_IFDIR) && !(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
-		// 	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
-		// 	ft_fprintf(2, "ft_ls: %s: Permission denied\n", (char*)cur->content);
 		else
 			ft_printf("%s\n", (char*)cur->content);
 		cur = cur->next;
@@ -176,9 +258,11 @@ void	print_directory(t_linfo *info)
 	t_list *cur;
 
 	cur = info->directory;
+
 	merge_sort(&cur, compare_fuc_file, info);
 	while (cur)
 	{
+		info->dir_sign++;
 		list_directory(cur->content, (int)ft_strlen((char*)cur->content), info, 0);
 		cur = cur->next;
 	}
@@ -193,6 +277,7 @@ int main(int ac, char **av)
 	ft_bzero(info, sizeof(t_linfo));
 
 	info = parse_argument(av, info);
+
 	print_unvalid(info->invalid,info);
 	print_file(info->file, info);
 	print_directory(info);
