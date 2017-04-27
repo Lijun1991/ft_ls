@@ -108,6 +108,7 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 		if (((sb.st_mode & S_IFMT) == S_IFLNK) && (info->flag & FLAG_L))
 		{
 			ft_printf("%s -> %s\n", info->file_path, get_link_path(info->file_path, info->path));
+			// ft_printf("%s %s\n", info->file_path, info->path);
 		}
 		else
 			ft_printf("%s\n", info->file_path);

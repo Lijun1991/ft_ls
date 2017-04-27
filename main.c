@@ -73,35 +73,37 @@ char *get_link_file(char *link_name)
 	return (s);
 }
 
-void	print_link(char *av, t_linfo *info)
-{
-	struct stat sb;
-	char *link;
+// void	print_link(char *av, t_linfo *info)
+// {
+// 	struct stat sb;
+// 	char *link;
 
-	link = get_link_file(av);
-	if (lstat(link, &sb) == -1)
-		ft_lstadd(&info->invalid, ft_lstnew(link, (int)ft_strlen(link) + 1));
-	else if ((sb.st_mode & S_IFMT) == S_IFDIR)
-	{
-		if (!(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
- 	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
-		{
-			ft_fprintf(2, "ls: %s: Permission denied\n", av);//ft_ls
-			exit(1);
-		}
-		ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
-	}
-	else// if ((sb.st_mode & S_IFMT) == S_IFREG)
-	{
-		ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
-	}
+// 	link = get_link_file(av);
+// 	// if (lstat(link, &sb) == -1)
+// 	// 	ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
+// 	if ((sb.st_mode & S_IFMT) == S_IFDIR)
+// 	{
+// 		if (!(sb.st_mode & S_IRUSR) && !(sb.st_mode & S_IWUSR) && !(sb.st_mode & S_IXUSR)\
+//  	&& !(sb.st_mode & S_IRGRP) && !(sb.st_mode & S_IWGRP) && !(sb.st_mode & S_IXGRP) && !(sb.st_mode & S_IROTH) && !(sb.st_mode & S_IWOTH) && !(sb.st_mode & S_IXOTH))
+// 		{
+// 			ft_fprintf(2, "ls: %s: Permission denied\n", av);//ft_ls
+// 			exit(1);
+// 		}
+// 		ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
+// 	}
+// 	else// if ((sb.st_mode & S_IFMT) == S_IFREG)
+// 	{
+// 		ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
+// 	}
 
-}
+// }
 
 int	get_arg(t_linfo *info, char *av)
 {
 	// DIR *dirp;
 	struct stat sb;
+	struct stat sb1;
+	char *link;
 
 	if (av)
 	{
@@ -116,12 +118,12 @@ int	get_arg(t_linfo *info, char *av)
 			// ft_printf("it's invalid\n");
 			ft_lstadd(&info->invalid, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
-		if ((sb.st_mode & S_IFMT) == S_IFLNK)
-		{
-			print_link(av, info);
-			// av = ft_strdup(get_link_file(av));
-			// lstat(av, &sb);
-		}
+		// if ((sb.st_mode & S_IFMT) == S_IFLNK)
+		// {
+		// 	print_link(av, info);
+		// 	// av = ft_strdup(get_link_file(av));
+		// 	// lstat(av, &sb);
+		// }
 		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
 		{
 			// ft_printf("it's dir\n");
@@ -133,16 +135,29 @@ int	get_arg(t_linfo *info, char *av)
 			}
 			ft_lstadd(&info->directory, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
-		else if ((sb.st_mode & S_IFMT) == S_IFREG)
+		else //if ((sb.st_mode & S_IFMT) == S_IFREG)
 		{
-			// ft_printf("it's file\n");
-			ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
+			if ((sb.st_mode & S_IFMT) == S_IFLNK)
+			{
+				link = get_link_file(av);
+				if (lstat(link, &sb1) == -1)
+				{
+					ft_lstadd(&info->invalid, ft_lstnew(link, (int)ft_strlen(link) + 1));
+				}
+				if ((sb1.st_mode & S_IFMT) == S_IFDIR)
+					ft_lstadd(&info->directory, ft_lstnew(link, (int)ft_strlen(link) + 1));
+				else if ((sb.st_mode & S_IFMT) == S_IFREG)
+					ft_lstadd(&info->file, ft_lstnew(link, (int)ft_strlen(link) + 1));
+			}
+			// ft_lstadd(&info->file, ft_lstnew(av, (int)ft_strlen(av) + 1));
 		}
+
 		// else
 		// {
 		// 	ft_printf("something else");
 		// 	exit(1);
 		// }
+
 		// dirp = opendir(av);
 		// if (dirp != NULL)
 		// {
