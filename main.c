@@ -82,7 +82,6 @@ t_linfo	*parse_argument(char **av, t_linfo *info)
 		ft_lstadd(&info->directory, ft_lstnew(".", 2));
 	while (*av != NULL)
 	{
-		info->count++;
 		get_arg(info, *av++);
 	}
 	return (info);

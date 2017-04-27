@@ -40,10 +40,11 @@ int	compare_fuc_r_dir(t_list *a, t_list *b, t_linfo *info)
 	struct dirent *dir;
 	struct dirent *diry;
 
+	(void)info;
 	dir = a->content;
 	diry = b->content;
-	if (info)
-		;
+	// if (info)
+	// 	;
 	return (ft_strcmp(dir->d_name, diry->d_name) > 0);
 }
 

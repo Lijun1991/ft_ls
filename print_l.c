@@ -84,17 +84,19 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	ft_printf("%c", get_type(sb));
 	ft_printf("%c", sb.st_mode & S_IRUSR ? 'r' : '-');
 	ft_printf("%c", sb.st_mode & S_IWUSR ? 'w' : '-');
-	ft_printf("%c", sb.st_mode & S_IXUSR ? 'x' : '-');
+	ft_printf("%c", sb.st_mode & S_IXUSR ? (sb.st_mode & S_ISUID ? 's' : 'x') : (sb.st_mode & S_ISUID ? 'S' : '-'));
+
 	ft_printf("%c", sb.st_mode & S_IRGRP ? 'r' : '-');
 	ft_printf("%c", sb.st_mode & S_IWGRP ? 'w' : '-');
-	ft_printf("%c", sb.st_mode & S_IXGRP ? 'x' : '-');
+	ft_printf("%c", sb.st_mode & S_IXGRP ? (sb.st_mode & S_ISGID ? 's' : 'x') : (sb.st_mode & S_ISGID ? 'S' : '-'));
+
 	ft_printf("%c", sb.st_mode & S_IROTH ? 'r' : '-');
 	ft_printf("%c", sb.st_mode & S_IWOTH ? 'w' : '-');
-	ft_printf("%c", sb.st_mode & S_IXOTH ? 'x' : '-');
+	ft_printf("%c", sb.st_mode & S_IXOTH ? (sb.st_mode & S_ISVTX ? 't' : 'x') : (sb.st_mode & S_ISVTX ? 'T' : '-'));
 
 	ft_printf("  %*ld", max_len(info->max_link), (long)sb.st_nlink);
-	ft_printf(" %s", s->pw_name);
-	ft_printf("  %s", t->gr_name);
+	ft_printf(" %-*s  %-*s", info->max_on, s->pw_name, info->max_gn, t->gr_name);
+	// ft_printf("hahah%d %d hahha", info->max_on, info->max_gn);
 	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
 	modi_time(ctime(&sb.st_mtime), sb);
 	if (!dir && info->is_file)

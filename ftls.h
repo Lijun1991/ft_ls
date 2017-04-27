@@ -46,10 +46,12 @@ typedef struct	s_linfo
 	t_list *file;//
 	t_list *directory;//
 	int flag;//
-	int count;//
+
 	long long block_size;
 	long max_link;
 	long long max_bytes_nbr;
+	int max_on;//max owner name
+	int max_gn;//max group name 
 	int is_file;
 	int is_dir;// print total blocksize = 0 while only one file contained, .  and .. and one file
 }				t_linfo;

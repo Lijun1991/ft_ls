@@ -166,9 +166,16 @@ void	lst_print_all_rec(t_list *lst, t_linfo *info)
 
 void	get_max_space(t_linfo *info, struct stat sb)
 {
+	struct passwd *s;
+	struct group *t;
+
+	s = getpwuid(sb.st_uid);
+	t = getgrgid(sb.st_gid);
 	info->max_link = sb.st_nlink > info->max_link ? sb.st_nlink : info->max_link;
 	info->max_bytes_nbr = sb.st_size > info->max_bytes_nbr ? sb.st_size : info->max_bytes_nbr;
 	info->block_size += (long long) sb.st_blocks;
+	info->max_on = (int)ft_strlen(s->pw_name) > info->max_on ? (int)ft_strlen(s->pw_name) : info->max_on;
+	info->max_gn = (int)ft_strlen(t->gr_name) > info->max_gn ? (int)ft_strlen(t->gr_name) : info->max_gn;
 }
 
 void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *info)
@@ -200,8 +207,7 @@ void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *in
 	}
 	if (info->flag & FLAG_A)
 		info->is_dir = 1;
-	// if (info->flag & FLAG_A)
-	// 	info->is_dir = 1;
+
 	if (dir->d_name[0] != '.')
 		info->is_dir = 1;
 }
@@ -251,6 +257,9 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	info->is_dir = 0;
 	info->max_bytes_nbr = 0;
 	info->max_link = 0;
+	info->max_on = 0;
+	info->max_gn = 0;
+	info->is_file = 0;
 
 	info->path = ft_strdup(path);
 	while ((dir = readdir(dirp)))
