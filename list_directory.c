@@ -50,6 +50,7 @@ char	*get_path(char *path, char *name)
 	char *dst;
 
 	dst = ft_strjoin(path, "/");
+	// ft_printf("\nmiddle is: %s\n", dst);
 	dst = ft_strjoin(dst, name);
 
 	return (dst);
@@ -64,10 +65,13 @@ char *get_link_path(char *lname, char *lpath)
 	len = 0;
 	tmp = 0;
 	s = (char*)malloc(sizeof(char) * 226);
+
 	tmp = readlink(get_path(lpath, lname), s, 225);
 	if (tmp != -1)
 		len = tmp;
 	s[len] = '\0';
+
+	// ft_printf("\nget link path is: %s\n", s);
 	return (s);
 }
 
@@ -132,34 +136,6 @@ void	lst_print_all_rec(t_list *lst, t_linfo *info)
 		else if (dir->d_name[0] != '.')
 			print_helper(dir, sb, info->path, info);
 
-
-		// if (info->flag & FLAG_A && info->flag & FLAG_L && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		// 	print_l(sb, dir, info);//1
-		// else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] != '.')
-		// 	print_l(sb, dir, info);//0
-		// else if (info->flag & FLAG_A && (info->flag & FLAG_L) && dir->d_name[0] == '.')
-		// 	print_l(sb, dir, info);//1
-
-		// else if (info->flag & FLAG_A && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
-		// else if (info->flag & FLAG_A && dir->d_name[0] != '.')
-		// 	ft_printf("%s\n", dir->d_name);
-		// else if (info->flag & FLAG_A && dir->d_name[0] == '.'&& ((sb.st_mode & S_IFMT) == S_IFDIR))
-		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
-		// else if (info->flag & FLAG_A && dir->d_name[0] == '.')
-		// 	ft_printf("%s\n", dir->d_name);
-
-
-		// else if ((info->flag & FLAG_L) && dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		// 	print_l(sb, dir, info);//1
-		// else if ((info->flag & FLAG_L) && dir->d_name[0] != '.')
-		// 	print_l(sb, dir, info);//0
-
-		// else if (dir->d_name[0] != '.' && ((sb.st_mode & S_IFMT) == S_IFDIR))
-		// 	ft_printf(GREE"%s\n"CLN, dir->d_name);
-		// else if (dir->d_name[0] != '.')
-		// 	ft_printf("%s\n", dir->d_name);
-
 		cur = cur->next;
 	}
 }
@@ -176,6 +152,11 @@ void	get_max_space(t_linfo *info, struct stat sb)
 	info->block_size += (long long) sb.st_blocks;
 	info->max_on = (int)ft_strlen(s->pw_name) > info->max_on ? (int)ft_strlen(s->pw_name) : info->max_on;
 	info->max_gn = (int)ft_strlen(t->gr_name) > info->max_gn ? (int)ft_strlen(t->gr_name) : info->max_gn;
+	// if (S_ISBLK(sb.st_mode) || S_ISCHR(sb.st_mode))
+	// {
+	// 	info->max_major = major(sb.st_rdev) > info->max_major ? major(sb.st_rdev) : info->max_major;
+	// 	info->max_minor = minor(sb.st_rdev) > info->max_minor ? minor(sb.st_rdev) : info->max_minor;
+	// }
 }
 
 void	get_lst(struct dirent *dir, t_list **all_lst, t_list **dir_lst, t_linfo *info)
@@ -231,6 +212,17 @@ void	change_sort_way(t_list **lst, t_linfo *info)
 		merge_sort(lst, compare_fuc_dir, info);
 }
 
+char *extract_path(char *path)
+{
+	int len;
+
+	len = ft_strlen(path);
+	while (len--)
+		if (path[len] == '/')
+			return (&path[len + 1]);
+	return (path);
+}
+
 int	list_directory(char *path, int len, t_linfo *info, int sign)
 {
 	DIR *dirp;
@@ -255,7 +247,8 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	dirp = opendir(path);
 	if (dirp == NULL)
 	{
-		perror("dir no exit");
+		ft_printf("ls: %s: ", extract_path(path));
+		perror("");
 		return (2);
 	}
 	info->block_size = 0;
@@ -264,7 +257,11 @@ int	list_directory(char *path, int len, t_linfo *info, int sign)
 	info->max_link = 0;
 	info->max_on = 0;
 	info->max_gn = 0;
+
 	info->is_file = 0;
+
+	info->max_major = 0;
+	info->max_minor = 0;
 
 	info->path = ft_strdup(path);
 	while ((dir = readdir(dirp)))

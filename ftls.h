@@ -43,6 +43,7 @@ typedef struct	s_linfo
 {
 	char *path;
 	char *file_path;
+	char *full_link;
 	t_list *invalid;//
 	t_list *file;//
 	t_list *directory;//
@@ -54,10 +55,29 @@ typedef struct	s_linfo
 	long long max_bytes_nbr;
 	int max_on;//max owner name
 	int max_gn;//max group name 
+	long max_major;
+	long max_minor;
+
 	int is_file;
 	int is_dir;// print total blocksize = 0 while only one file contained, .  and .. and one file
 	int dir_sign;
 }				t_linfo;
+
+//ls_parse_arg.c
+t_linfo	*parse_argument(char **av, t_linfo *info);
+int	get_arg(t_linfo *info, char *av);
+char *get_full_link(char *av, char* link);
+char *get_link_file(char *link_name);
+char	**parse_flag(char **av, int *flag);
+void  get_flag(char *av, int *flag);
+
+//ls_print_all.c 
+
+void	print_directory(t_linfo *info);
+void	print_file(t_list *file, t_linfo *info);
+void	get_file_max_space(t_linfo *info, t_list *file);
+void	print_unvalid(t_list *invalid, t_linfo *info);
+
 
 void merge_sort(t_list **headref, int (*compare_fuc)(t_list *, t_list *, t_linfo *), t_linfo *info);
 // void front_back_split(t_list *source, t_list **frontref, t_list **backref)

@@ -50,7 +50,7 @@ char	get_type(struct stat sb)
 	else if ((sb.st_mode & S_IFMT) == S_IFDIR)
 		a = 'd';
 	else if ((sb.st_mode & S_IFMT) == S_IFBLK)
-		a = 's';
+		a = 'b';
 	else if ((sb.st_mode & S_IFMT) == S_IFREG)
 		a = '-';
 	else if ((sb.st_mode & S_IFMT) == S_IFLNK)
@@ -94,35 +94,39 @@ void	print_l(struct stat sb, struct dirent *dir, t_linfo *info)//int sign,
 	ft_printf("%c", sb.st_mode & S_IWOTH ? 'w' : '-');
 	ft_printf("%c", sb.st_mode & S_IXOTH ? (sb.st_mode & S_ISVTX ? 't' : 'x') : (sb.st_mode & S_ISVTX ? 'T' : '-'));
 
-	// if (listxattr(info->path, NULL, 0, XATTR_NOFOLLOW) == 0)
-	// 	ft_printf("@");
-	// else
-	// 	perror("listxattr");
+	if (listxattr(get_path(info->path, dir->d_name), NULL, 0, info->flag & FLAG_L ? XATTR_NOFOLLOW : 0) > 0)
+		ft_printf("@");
+	else
+		ft_printf(" ");
 
-	ft_printf("  %*ld", max_len(info->max_link), (long)sb.st_nlink);
-	ft_printf(" %-*s  %-*s", info->max_on, s->pw_name, info->max_gn, t->gr_name);
-	ft_printf("  %*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
+	ft_printf(" %*ld", max_len(info->max_link), (long)sb.st_nlink);
+	ft_printf(" %-*s  %-*s  ", info->max_on, s->pw_name, info->max_gn, t->gr_name);
+
+	if (S_ISBLK(sb.st_mode) || S_ISCHR(sb.st_mode))
+	{
+		//ft_printf("%*ld, %*ld", max_len(info->max_major), (long) major(sb.st_rdev), max_len(info->max_minor), (long) minor(sb.st_rdev));
+		ft_printf("%ld, %ld", major(sb.st_rdev), minor(sb.st_rdev));
+	}
+	else
+		ft_printf("%*lld", max_len(info->max_bytes_nbr), (long long) sb.st_size);
+	// ft_printf("major len is %ld, %ld", info->max_major, info->max_minor);
 	modi_time(ctime(&sb.st_mtime), sb);
 	if (!dir && info->is_file)
 	{
+
 		if (((sb.st_mode & S_IFMT) == S_IFLNK) && (info->flag & FLAG_L))
 		{
-			ft_printf("%s -> %s\n", info->file_path, get_link_path(info->file_path, info->path));
-			// ft_printf("%s %s\n", info->file_path, info->path);
+			ft_printf("%s\n", info->full_link);
 		}
 		else
 			ft_printf("%s\n", info->file_path);
 	}	
 	else
 	{
+		
 		print_helper(dir, sb, info->path, info);
-		// if (sign == 1)
-		// 	ft_printf(" %s\n", dir->d_name);
-		// else
-			// ft_printf(" %s\n", dir->d_name);
 	}
 }
-
 
 
 
