@@ -31,6 +31,7 @@ int main(int ac, char **av)
 	info = parse_argument(av, info);
 		// if (info->path)
 		// 	;
+	// ft_printf("hello");
 	print_unvalid(info->invalid,info);
 	print_file(info->file, info);
 	print_directory(info);

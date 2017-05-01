@@ -49,7 +49,8 @@ char	**parse_flag(char **av, int *flag)
 {
 	while (*++av)
 	{
-		if (av[0][0] == '-')
+		// ft_printf("*av[0] is %s, *av is %s\n", av[1], *av);
+		if (av[0][0] == '-' && av[0][1] != '-' && av[0][1])
 			get_flag(*av, flag);
 		else
 			break ;
@@ -148,14 +149,26 @@ int	get_arg(t_linfo *info, char *av)
 t_linfo	*parse_argument(char **av, t_linfo *info)
 {
 	av = parse_flag(av, &info->flag);
+
+	// ft_printf("av is %s\n", av);
+	// ft_printf("1, *av[0] is %c, *av[1] is %c, *av is %s\n", *av[1], *av[2], *av);
+	if (*av != NULL && av[0][0] == '-' && av[0][1] && av[0][1] == '-')
+	{
+		// ft_printf("hello");
+		av++;
+	}
+
+	// ft_printf("av[0] is %s, *av is %s\n", av[0], *av);
 	if (*av == NULL)
 	{
+		// ft_printf("hello");
 		ft_lstadd(&info->directory, ft_lstnew(".", 2));
 	}
-	while (*av != NULL)
-	{
-		info->count_arg++;
-		get_arg(info, *av++);
-	}
+	else 
+		while (*av != NULL)
+		{
+			info->count_arg++;
+			get_arg(info, *av++);
+		}
 	return (info);
 }
