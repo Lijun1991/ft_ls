@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "./libft/libft.h"
+// _POSIX_C_SOURCE
 
 int	main(int argc, char *argv[])
 {
@@ -25,7 +27,8 @@ int	main(int argc, char *argv[])
    char *s;
    char *dst;
 
-   s = (char*)malloc(sizeof(char) * 225);
+   ft_printf("hello\n");
+   s = (char*)malloc(sizeof(char) * 226);
    if (argc != 2) {
        fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
        exit(EXIT_FAILURE);
@@ -35,17 +38,19 @@ int	main(int argc, char *argv[])
        perror("stat");
        exit(EXIT_FAILURE);
    }
-   tmp = readlink(argv[1], s, 225);
-   if (tmp != -1)
-      len = tmp;
-    s[len + 1] = '\0';
-   printf("link is    %s\n", s);
-   printf("Last status change:       %s", ctime(&sb.st_ctime));
-   printf("ID of containing device:  [%lx,%lx]\n",
-       (long) major(sb.st_dev), (long) minor(sb.st_dev));
+   if ((sb.st_mode & S_IFMT) == S_IFLNK)
+   {
+      tmp = readlink(argv[1], s, 255);
+      ft_printf("tmp = %d\n", tmp);
+     if (tmp != -1 && tmp <= 255)
+        len = tmp;
+      else 
+        ft_printf("link path truncation error\n");
+      s[len] = '\0';
+      printf("link is    %s\n", s);
+   }
 
    printf("File type:                ");
-
    switch (sb.st_mode & S_IFMT) {
    case S_IFBLK:  printf("block device\n");            break;
    case S_IFCHR:  printf("character device\n");        break;
@@ -73,8 +78,9 @@ int	main(int argc, char *argv[])
            (long long) sb.st_blocks);
 
    // printf("Last status change:       %s", ctime(&sb.st_ctime));
-   printf("Last file access:         %ld\n", sb.st_atime);
-   printf("Last file access:         %s", ctime(&sb.st_atime));
+    printf("Last file modification:         %ld\n", sb.st_mtime);
+   printf("Last file modification:         %s", ctime(&sb.st_mtime));
+    printf("Last file modification nanosecn:         %ld", sb.st_mtimespec.tv_nsec);
    // printf("Last file modification:   %ld", sb.st_mtime);
 
 

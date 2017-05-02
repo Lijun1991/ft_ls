@@ -198,14 +198,14 @@ void	change_sort_way(t_list **lst, t_linfo *info)
 {
 	if ((info->flag & FLAG_R) && (info->flag & FLAG_T))
 	{
-		merge_sort(lst, compare_fuc_r_file, info);
+		// merge_sort(lst, compare_fuc_r_file, info);
 		merge_sort(lst, compare_fuc_rt_dir, info);
 	}
 	else if (info->flag & FLAG_R)
 		merge_sort(lst, compare_fuc_r_dir, info);
 	else if (info->flag & FLAG_T)
 	{
-		merge_sort(lst, compare_fuc_file, info);
+		// merge_sort(lst, compare_fuc_file, info);
 		merge_sort(lst, compare_fuc_t_dir, info);
 	}
 	else

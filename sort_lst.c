@@ -32,7 +32,15 @@ int	compare_fuc_rt_dir(t_list *a, t_list *b, t_linfo *info)
 		perror("stat");
 		return (-1);
 	}
-	return ((sb.st_mtime) <= (sb1.st_mtime));
+	if ((sb.st_mtime) != (sb1.st_mtime))
+		return ((sb.st_mtime) < (sb1.st_mtime));
+	else
+	{
+		if ((sb.st_mtimespec.tv_nsec) != (sb1.st_mtimespec.tv_nsec))
+			return ((sb.st_mtimespec.tv_nsec) < (sb1.st_mtimespec.tv_nsec));
+		else
+			return (ft_strcmp(sub_dir, sub_dir1) > 0);
+	}
 }
 
 int	compare_fuc_r_dir(t_list *a, t_list *b, t_linfo *info)
@@ -65,7 +73,15 @@ int	compare_fuc_t_dir(t_list *a, t_list *b, t_linfo *info)
 		perror("stat");
 		return (-1);
 	}
-	return ((sb.st_mtime) > (sb1.st_mtime));
+	if ((sb.st_mtime) != (sb1.st_mtime))
+		return ((sb.st_mtime) > (sb1.st_mtime));
+	else
+	{
+		if ((sb.st_mtimespec.tv_nsec) != (sb1.st_mtimespec.tv_nsec))
+			return ((sb.st_mtimespec.tv_nsec) > (sb1.st_mtimespec.tv_nsec));
+		else
+			return (ft_strcmp(sub_dir, sub_dir1) < 0);
+	}
 }
 
 int	compare_fuc_dir(t_list *a, t_list *b, t_linfo *info)
@@ -96,7 +112,15 @@ int	compare_fuc_rt_file(t_list *a, t_list *b, t_linfo *info)
 		perror("stat");
 		return (-1);
 	}
-	return ((sb.st_mtime) <= (sb1.st_mtime));
+	if ((sb.st_mtime) != (sb1.st_mtime))
+		return ((sb.st_mtime) < (sb1.st_mtime));
+	else
+	{
+		if ((sb.st_mtimespec.tv_nsec) != (sb1.st_mtimespec.tv_nsec))
+			return ((sb.st_mtimespec.tv_nsec) < (sb1.st_mtimespec.tv_nsec));
+		else
+			return (ft_strcmp(file_name, file_name1) > 0);
+	}
 }
 
 int	compare_fuc_t_file(t_list *a, t_list *b, t_linfo *info)
@@ -115,7 +139,15 @@ int	compare_fuc_t_file(t_list *a, t_list *b, t_linfo *info)
 		perror("stat");
 		return (-1);
 	}
-	return ((sb.st_mtime) > (sb1.st_mtime));
+	if ((sb.st_mtime) != (sb1.st_mtime))
+		return ((sb.st_mtime) > (sb1.st_mtime));
+	else
+	{
+		if ((sb.st_mtimespec.tv_nsec) != (sb1.st_mtimespec.tv_nsec))
+			return ((sb.st_mtimespec.tv_nsec) > (sb1.st_mtimespec.tv_nsec));
+		else
+			return (ft_strcmp(file_name, file_name1) < 0);
+	}
 }
 
 int	compare_fuc_r_file(t_list *a, t_list *b, t_linfo *info)

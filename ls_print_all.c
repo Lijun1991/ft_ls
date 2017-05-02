@@ -56,7 +56,7 @@ void	print_file(t_list *file, t_linfo *info)
 	get_file_max_space(info, file);
 	if (info->flag & FLAG_R && info->flag & FLAG_T)
 	{
-		merge_sort(&cur, compare_fuc_file, info);
+		// merge_sort(&cur, compare_fuc_file, info);
 		merge_sort(&cur, compare_fuc_rt_file, info);
 	}
 	else if (info->flag & FLAG_R)
