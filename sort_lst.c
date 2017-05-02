@@ -56,18 +56,13 @@ int	compare_fuc_r_dir(t_list *a, t_list *b, t_linfo *info)
 
 int	compare_fuc_t_dir(t_list *a, t_list *b, t_linfo *info)
 {
-	struct dirent *dir;
-	struct dirent *diry;
 	struct stat sb;
 	struct stat sb1;
 	char *sub_dir;
 	char *sub_dir1;
 
-	dir = a->content;
-	diry = b->content;
-
-	sub_dir = add_path(dir->d_name, info->path);
-	sub_dir1 = add_path(diry->d_name, info->path);
+	sub_dir = add_path(((struct dirent*)a)->d_name, info->path);
+	sub_dir1 = add_path(((struct dirent*)b)->d_name, info->path);
 	if (lstat(sub_dir, &sb) == -1 || lstat(sub_dir1, &sb1) == -1)
 	{
 		perror("stat");
